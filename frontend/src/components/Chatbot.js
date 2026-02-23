@@ -51,13 +51,46 @@ const Chatbot = () => {
     const bookingDate = suggestions.suggestedDateTime?.date || new Date().toISOString().split('T')[0];
     const bookingTime = suggestions.suggestedDateTime?.time || '10:00';
 
+    // Get service address with validation
+    let serviceAddress = '';
+    let addressEntered = false;
+    
+    while (!addressEntered) {
+      const input = prompt('Please enter your service address:');
+      
+      // Check if user cancelled
+      if (input === null) {
+        setMessages(prev => [...prev, { 
+          type: 'bot', 
+          text: 'Booking cancelled. Please try again when you\'re ready.' 
+        }]);
+        return;
+      }
+      
+      // Trim and validate address
+      const trimmedAddress = input.trim();
+      
+      if (!trimmedAddress) {
+        alert('Please enter a valid address. The address cannot be empty.');
+        continue; // Retry the prompt
+      }
+      
+      if (trimmedAddress.length < 5) {
+        alert('Please enter a complete address (at least 5 characters).');
+        continue; // Retry the prompt
+      }
+      
+      serviceAddress = trimmedAddress;
+      addressEntered = true;
+    }
+
     try {
       const response = await axios.post('/api/chatbot/book', {
         provider_id: providerId,
         service_id: serviceId,
         booking_date: bookingDate,
         booking_time: bookingTime,
-        service_address: prompt('Please enter your service address:') || '',
+        service_address: serviceAddress,
         urgency_level: suggestions.urgency,
         total_cost: suggestions.service?.base_price || null
       });
@@ -68,9 +101,10 @@ const Chatbot = () => {
       }]);
       setSuggestions(null);
     } catch (error) {
+      const errorMessage = error.response?.data?.message || 'Sorry, there was an error creating your booking. Please try again.';
       setMessages(prev => [...prev, { 
         type: 'bot', 
-        text: 'Sorry, there was an error creating your booking. Please try again.' 
+        text: errorMessage
       }]);
     }
   };
@@ -100,7 +134,15 @@ const Chatbot = () => {
             <div key={provider.provider_id} className="provider-suggestion">
               <div>
                 <strong>{provider.business_name || `${provider.first_name} ${provider.last_name}`}</strong>
-                <p>Rating: {provider.rating ? parseFloat(provider.rating).toFixed(1) : 'N/A'} ⭐ | Rate: {formatCurrencyShort(provider.hourly_rate)}/hr</p>
+                <p>
+                  Rating: {provider.rating ? parseFloat(provider.rating).toFixed(1) : 'N/A'} ⭐ | 
+                  Rate: {formatCurrencyShort(provider.hourly_rate)}/hr
+                  {provider.distance !== null && provider.distance !== undefined && (
+                    <span style={{ marginLeft: '8px', color: '#666' }}>
+                      | 📍 {parseFloat(provider.distance).toFixed(1)} km away
+                    </span>
+                  )}
+                </p>
               </div>
               <button 
                 className="btn btn-primary"

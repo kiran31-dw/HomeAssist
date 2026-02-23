@@ -63,12 +63,51 @@ router.get('/my-complaints', authenticate, async (req, res) => {
             return res.status(403).json({ message: 'Access denied' });
         }
 
+        // Filter by booking_id if provided
+        if (req.query.booking_id) {
+            query += ' AND booking_id = ?';
+            params.push(req.query.booking_id);
+        }
+
         query += ' ORDER BY created_at DESC';
 
         const [complaints] = await pool.execute(query, params);
         res.json({ complaints });
     } catch (error) {
         console.error('Get complaints error:', error);
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+});
+
+// Get complaints by booking ID
+router.get('/booking/:bookingId', authenticate, async (req, res) => {
+    try {
+        if (req.user.role !== 'user') {
+            return res.status(403).json({ message: 'Access denied' });
+        }
+
+        // Verify booking belongs to user
+        const [bookings] = await pool.execute(
+            'SELECT user_id FROM bookings WHERE booking_id = ?',
+            [req.params.bookingId]
+        );
+
+        if (bookings.length === 0) {
+            return res.status(404).json({ message: 'Booking not found' });
+        }
+
+        if (bookings[0].user_id !== req.user.id) {
+            return res.status(403).json({ message: 'Access denied' });
+        }
+
+        const [complaints] = await pool.execute(
+            'SELECT * FROM complaints WHERE booking_id = ? AND user_id = ? ORDER BY created_at DESC',
+            [req.params.bookingId, req.user.id]
+        );
+
+        res.json({ complaints });
+    } catch (error) {
+        console.error('Get complaints by booking error:', error);
         res.status(500).json({ message: 'Server error', error: error.message });
     }
 });

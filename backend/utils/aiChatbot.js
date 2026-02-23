@@ -1,5 +1,6 @@
 const natural = require('natural');
 const pool = require('../config/database');
+const { getCityCoordinates, calculateDistance, sortProvidersByRelevance } = require('./location');
 
 // Initialize tokenizer and stemmer
 const tokenizer = new natural.WordTokenizer();
@@ -109,22 +110,114 @@ async function processChatbotMessage(userMessage, userId = null) {
         const urgency = extractUrgency(userMessage);
         const dateTime = extractDateTime(userMessage);
         
-        // Find suitable providers (only available ones, no active jobs)
-        const [providers] = await pool.execute(
-            `SELECT p.provider_id, p.first_name, p.last_name, p.business_name, 
-                    p.service_category, p.rating, p.hourly_rate, p.availability_status, p.city
-             FROM service_providers p
-             LEFT JOIN bookings b ON p.provider_id = b.provider_id 
-                AND b.status = 'in_progress' 
-                AND b.booking_date >= CURDATE()
-             WHERE p.service_category = ? 
-             AND p.verification_status = 'verified'
-             AND p.availability_status = 'available'
-             AND b.booking_id IS NULL
-             ORDER BY p.rating DESC, p.hourly_rate ASC
-             LIMIT 5`,
-            [serviceType]
-        );
+        // Get user location if userId is provided
+        let userLat = null;
+        let userLon = null;
+        let userCity = null;
+        
+        if (userId) {
+            const [users] = await pool.execute(
+                'SELECT city, latitude, longitude FROM users WHERE user_id = ?',
+                [userId]
+            );
+            
+            if (users.length > 0) {
+                const user = users[0];
+                userCity = user.city;
+                // Use stored coordinates if available, otherwise get from city name
+                if (user.latitude && user.longitude) {
+                    userLat = parseFloat(user.latitude);
+                    userLon = parseFloat(user.longitude);
+                } else if (user.city) {
+                    const cityCoords = getCityCoordinates(user.city);
+                    if (cityCoords) {
+                        userLat = cityCoords.lat;
+                        userLon = cityCoords.lon;
+                    }
+                }
+            }
+        }
+        
+        // Build query for providers
+        let query;
+        let params = [];
+        const maxDistance = 50; // Maximum distance in km (like Swiggy/Uber)
+        
+        if (userLat && userLon) {
+            // Location-based query with distance calculation using Haversine formula
+            query = `
+                SELECT p.provider_id, p.first_name, p.last_name, p.business_name, 
+                       p.service_category, p.rating, p.hourly_rate, p.availability_status, 
+                       p.city, p.latitude, p.longitude,
+                       CASE 
+                           WHEN p.latitude IS NOT NULL AND p.longitude IS NOT NULL THEN
+                               (6371 * acos(
+                                   cos(radians(?)) * 
+                                   cos(radians(p.latitude)) * 
+                                   cos(radians(p.longitude) - radians(?)) + 
+                                   sin(radians(?)) * 
+                                   sin(radians(p.latitude))
+                               ))
+                           ELSE NULL
+                       END AS distance
+                FROM service_providers p
+                LEFT JOIN bookings b ON p.provider_id = b.provider_id 
+                    AND b.status = 'in_progress' 
+                    AND b.booking_date >= CURDATE()
+                WHERE p.service_category = ? 
+                AND p.verification_status = 'verified'
+                AND p.availability_status = 'available'
+                AND b.booking_id IS NULL
+                HAVING distance IS NULL OR distance <= ?
+                ORDER BY 
+                    CASE WHEN distance IS NOT NULL THEN distance ELSE 999 END ASC,
+                    p.rating DESC,
+                    p.hourly_rate ASC
+                LIMIT 10
+            `;
+            params = [userLat, userLon, userLat, serviceType, maxDistance];
+        } else {
+            // Fallback: no location filtering (original behavior)
+            query = `
+                SELECT p.provider_id, p.first_name, p.last_name, p.business_name, 
+                       p.service_category, p.rating, p.hourly_rate, p.availability_status, 
+                       p.city, p.latitude, p.longitude, NULL AS distance
+                FROM service_providers p
+                LEFT JOIN bookings b ON p.provider_id = b.provider_id 
+                    AND b.status = 'in_progress' 
+                    AND b.booking_date >= CURDATE()
+                WHERE p.service_category = ? 
+                AND p.verification_status = 'verified'
+                AND p.availability_status = 'available'
+                AND b.booking_id IS NULL
+                ORDER BY p.rating DESC, p.hourly_rate ASC
+                LIMIT 5
+            `;
+            params = [serviceType];
+        }
+        
+        let [providers] = await pool.execute(query, params);
+        
+        // For providers without coordinates in DB, calculate distance using city coordinates
+        if (userLat && userLon && providers.length > 0) {
+            providers = providers.map(provider => {
+                if (!provider.distance && provider.city) {
+                    const providerCoords = getCityCoordinates(provider.city);
+                    if (providerCoords) {
+                        provider.distance = calculateDistance(
+                            userLat, userLon,
+                            providerCoords.lat, providerCoords.lon
+                        );
+                    }
+                }
+                return provider;
+            });
+            
+            // Filter by max distance and sort
+            providers = providers.filter(p => !p.distance || p.distance <= maxDistance);
+            providers = sortProvidersByRelevance(providers);
+            providers = providers.slice(0, 5); // Limit to top 5
+        }
         
         // Get service details
         const [services] = await pool.execute(
@@ -141,7 +234,7 @@ async function processChatbotMessage(userMessage, userId = null) {
             suggestedProviders: providers,
             service: services[0] || null,
             suggestedDateTime: dateTime,
-            message: generateResponseMessage(serviceType, providers.length, urgency)
+            message: generateResponseMessage(serviceType, providers.length, urgency, userCity)
         };
         
         return response;
@@ -152,13 +245,21 @@ async function processChatbotMessage(userMessage, userId = null) {
 }
 
 // Generate human-like response message
-function generateResponseMessage(serviceType, providerCount, urgency) {
+function generateResponseMessage(serviceType, providerCount, urgency, userCity = null) {
     let message = `I found ${serviceType} services for you. `;
     
     if (providerCount > 0) {
-        message += `I have ${providerCount} verified ${serviceType.toLowerCase()} provider${providerCount > 1 ? 's' : ''} available. `;
+        if (userCity) {
+            message += `I have ${providerCount} verified ${serviceType.toLowerCase()} provider${providerCount > 1 ? 's' : ''} available near ${userCity}. `;
+        } else {
+            message += `I have ${providerCount} verified ${serviceType.toLowerCase()} provider${providerCount > 1 ? 's' : ''} available. `;
+        }
     } else {
-        message += `Unfortunately, I couldn't find any available ${serviceType.toLowerCase()} providers at the moment. `;
+        if (userCity) {
+            message += `Unfortunately, I couldn't find any available ${serviceType.toLowerCase()} providers near ${userCity} at the moment. `;
+        } else {
+            message += `Unfortunately, I couldn't find any available ${serviceType.toLowerCase()} providers at the moment. `;
+        }
     }
     
     if (urgency === 'emergency') {
