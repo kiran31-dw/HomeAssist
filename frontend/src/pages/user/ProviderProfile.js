@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect, useCallback } from 'react';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import axios from 'axios';
 import { formatCurrency, formatCurrencyShort } from '../../utils/currency';
 import '../Dashboard.css';
@@ -7,6 +7,7 @@ import '../Dashboard.css';
 const ProviderProfile = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [provider, setProvider] = useState(null);
   const [reviews, setReviews] = useState([]);
   const [bookingForm, setBookingForm] = useState({
@@ -21,12 +22,7 @@ const ProviderProfile = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  useEffect(() => {
-    fetchProviderDetails();
-    fetchServices();
-  }, [id]);
-
-  const fetchProviderDetails = async () => {
+  const fetchProviderDetails = useCallback(async () => {
     try {
       const response = await axios.get(`/api/users/providers/${id}`);
       setProvider(response.data.provider);
@@ -37,18 +33,48 @@ const ProviderProfile = () => {
       setError('Provider not found');
       setLoading(false);
     }
-  };
+  }, [id]);
 
-  const fetchServices = async () => {
+  const fetchServices = useCallback(async () => {
+    if (!provider) return;
+    
     try {
+      // Get category from URL params or use provider's category
+      const categoryFromUrl = searchParams.get('category');
+      const category = categoryFromUrl || provider?.service_category;
+      
       const response = await axios.get('/api/users/services', {
-        params: { category: provider?.service_category }
+        params: category ? { category } : {}
       });
       setServices(response.data.services);
     } catch (error) {
       console.error('Error fetching services:', error);
     }
-  };
+  }, [provider, searchParams]);
+
+  useEffect(() => {
+    fetchProviderDetails();
+  }, [fetchProviderDetails]);
+
+  useEffect(() => {
+    if (provider) {
+      fetchServices();
+    }
+  }, [provider, fetchServices]);
+
+  useEffect(() => {
+    // Pre-select the first service when services are loaded
+    if (services.length > 0) {
+      // Reset and select first service if no service is selected or if services changed
+      const firstServiceId = services[0].service_id.toString();
+      setSelectedService(prev => {
+        if (prev === '' || !services.find(s => s.service_id.toString() === prev)) {
+          return firstServiceId;
+        }
+        return prev;
+      });
+    }
+  }, [services]);
 
   const handleBookingSubmit = async (e) => {
     e.preventDefault();
@@ -59,6 +85,16 @@ const ProviderProfile = () => {
       return;
     }
 
+    if (!bookingForm.booking_time) {
+      setError('Please select a time for the booking');
+      return;
+    }
+
+    if (!bookingForm.booking_date) {
+      setError('Please select a date for the booking');
+      return;
+    }
+
     // Check if provider is available
     if (provider.availability_status !== 'available') {
       setError('Provider is currently busy with another job. Please try another provider or book later.');
@@ -66,6 +102,14 @@ const ProviderProfile = () => {
     }
 
     try {
+      // Log the booking data being sent (for debugging)
+      console.log('Booking data:', {
+        booking_time: bookingForm.booking_time,
+        booking_date: bookingForm.booking_date,
+        provider_id: id,
+        service_id: selectedService
+      });
+
       const response = await axios.post('/api/bookings', {
         provider_id: id,
         service_id: selectedService,
@@ -73,9 +117,11 @@ const ProviderProfile = () => {
         total_cost: provider.hourly_rate || null
       });
 
+      console.log('Booking created successfully:', response.data.booking);
       alert('Booking created successfully!');
       navigate('/user/bookings');
     } catch (error) {
+      console.error('Booking error:', error);
       setError(error.response?.data?.message || 'Failed to create booking');
     }
   };

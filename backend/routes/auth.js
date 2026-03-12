@@ -3,6 +3,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { body, validationResult } = require('express-validator');
 const pool = require('../config/database');
+const { getCityCoordinates } = require('../utils/location');
 const router = express.Router();
 
 // User Registration
@@ -33,11 +34,22 @@ router.post('/register/user', [
         // Hash password
         const hashedPassword = await bcrypt.hash(password, 10);
 
+        // Get city coordinates if city is provided
+        let latitude = null;
+        let longitude = null;
+        if (city) {
+            const coords = getCityCoordinates(city);
+            if (coords) {
+                latitude = coords.lat;
+                longitude = coords.lon;
+            }
+        }
+
         // Insert user
         const [result] = await pool.execute(
-            `INSERT INTO users (first_name, last_name, email, password, phone, address, city, state, zip_code) 
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-            [first_name, last_name, email, hashedPassword, phone || null, address || null, city || null, state || null, zip_code || null]
+            `INSERT INTO users (first_name, last_name, email, password, phone, address, city, state, zip_code, latitude, longitude) 
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            [first_name, last_name, email, hashedPassword, phone || null, address || null, city || null, state || null, zip_code || null, latitude, longitude]
         );
 
         // Generate token
@@ -90,15 +102,26 @@ router.post('/register/provider', [
         // Hash password
         const hashedPassword = await bcrypt.hash(password, 10);
 
+        // Get city coordinates if city is provided
+        let latitude = null;
+        let longitude = null;
+        if (city) {
+            const coords = getCityCoordinates(city);
+            if (coords) {
+                latitude = coords.lat;
+                longitude = coords.lon;
+            }
+        }
+
         // Insert provider
         const [result] = await pool.execute(
             `INSERT INTO service_providers 
              (first_name, last_name, email, password, phone, business_name, license_number, 
-              address, city, state, zip_code, service_category, experience_years, hourly_rate) 
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+              address, city, state, zip_code, service_category, experience_years, hourly_rate, latitude, longitude) 
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
             [first_name, last_name, email, hashedPassword, phone, business_name || null, 
              license_number || null, address || null, city || null, state || null, 
-             zip_code || null, service_category, experience_years || null, hourly_rate || null]
+             zip_code || null, service_category, experience_years || null, hourly_rate || null, latitude, longitude]
         );
 
         // Generate token

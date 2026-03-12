@@ -1,87 +1,143 @@
--- Migration: Update provider coordinates for all Kerala cities
--- This ensures all service providers have latitude/longitude based on their city
+-- Migration: Update provider coordinates for all Kerala cities (64 cities)
+-- This ensures all service providers and users have latitude/longitude based on their city
 
 USE homeassist_db;
 
 -- Update service providers with coordinates based on their city
-UPDATE service_providers 
-SET latitude = 9.3816, longitude = 76.5744 
-WHERE city = 'Thiruvalla' AND (latitude IS NULL OR longitude IS NULL);
-
-UPDATE service_providers 
-SET latitude = 9.2647, longitude = 76.7870 
-WHERE city = 'Pathanamthitta' AND (latitude IS NULL OR longitude IS NULL);
-
-UPDATE service_providers 
-SET latitude = 9.9312, longitude = 76.2673 
-WHERE city = 'Kochi' AND (latitude IS NULL OR longitude IS NULL);
-
-UPDATE service_providers 
-SET latitude = 8.5241, longitude = 76.9366 
-WHERE city = 'Trivandrum' AND (latitude IS NULL OR longitude IS NULL);
-
-UPDATE service_providers 
-SET latitude = 9.5916, longitude = 76.5222 
-WHERE city = 'Kottayam' AND (latitude IS NULL OR longitude IS NULL);
-
-UPDATE service_providers 
-SET latitude = 9.4981, longitude = 76.3388 
-WHERE city = 'Alappuzha' AND (latitude IS NULL OR longitude IS NULL);
-
-UPDATE service_providers 
-SET latitude = 10.5276, longitude = 76.2144 
-WHERE city = 'Thrissur' AND (latitude IS NULL OR longitude IS NULL);
-
-UPDATE service_providers 
-SET latitude = 11.2588, longitude = 75.7804 
-WHERE city = 'Calicut' AND (latitude IS NULL OR longitude IS NULL);
-
-UPDATE service_providers 
-SET latitude = 11.8745, longitude = 75.3704 
-WHERE city = 'Kannur' AND (latitude IS NULL OR longitude IS NULL);
-
-UPDATE service_providers 
-SET latitude = 10.7867, longitude = 76.6548 
-WHERE city = 'Palakkad' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE service_providers SET latitude = 8.5241, longitude = 76.9366 WHERE city = 'Thiruvananthapuram' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE service_providers SET latitude = 8.3988, longitude = 77.08 WHERE city = 'Neyyattinkara' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE service_providers SET latitude = 8.6967, longitude = 76.8167 WHERE city = 'Attingal' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE service_providers SET latitude = 8.7375, longitude = 76.7167 WHERE city = 'Varkala' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE service_providers SET latitude = 8.8932, longitude = 76.6141 WHERE city = 'Kollam' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE service_providers SET latitude = 9.0167, longitude = 76.9333 WHERE city = 'Punalur' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE service_providers SET latitude = 9.05, longitude = 76.5333 WHERE city = 'Karunagappally' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE service_providers SET latitude = 9.0, longitude = 76.7667 WHERE city = 'Kottarakkara' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE service_providers SET latitude = 8.8333, longitude = 76.6667 WHERE city = 'Paravur' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE service_providers SET latitude = 9.2647, longitude = 76.7870 WHERE city = 'Pathanamthitta' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE service_providers SET latitude = 9.3816, longitude = 76.5744 WHERE city = 'Thiruvalla' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE service_providers SET latitude = 9.3167, longitude = 76.6167 WHERE city = 'Chengannur' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE service_providers SET latitude = 9.15, longitude = 76.7333 WHERE city = 'Adoor' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE service_providers SET latitude = 9.3833, longitude = 76.8 WHERE city = 'Ranni' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE service_providers SET latitude = 9.3333, longitude = 76.7 WHERE city = 'Kozhencherry' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE service_providers SET latitude = 9.4981, longitude = 76.3388 WHERE city = 'Alappuzha' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE service_providers SET latitude = 9.6833, longitude = 76.3333 WHERE city = 'Cherthala' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE service_providers SET latitude = 9.2667, longitude = 76.55 WHERE city = 'Mavelikkara' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE service_providers SET latitude = 9.1833, longitude = 76.5 WHERE city = 'Kayamkulam' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE service_providers SET latitude = 9.2833, longitude = 76.45 WHERE city = 'Haripad' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE service_providers SET latitude = 9.5916, longitude = 76.5222 WHERE city = 'Kottayam' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE service_providers SET latitude = 9.45, longitude = 76.5333 WHERE city = 'Changanassery' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE service_providers SET latitude = 9.7167, longitude = 76.6833 WHERE city = 'Pala' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE service_providers SET latitude = 9.6667, longitude = 76.5667 WHERE city = 'Ettumanoor' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE service_providers SET latitude = 9.7667, longitude = 76.4 WHERE city = 'Vaikom' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE service_providers SET latitude = 9.7, longitude = 76.7833 WHERE city = 'Erattupetta' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE service_providers SET latitude = 9.85, longitude = 76.9667 WHERE city = 'Idukki' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE service_providers SET latitude = 9.9, longitude = 76.7167 WHERE city = 'Thodupuzha' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE service_providers SET latitude = 10.0889, longitude = 77.0597 WHERE city = 'Munnar' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE service_providers SET latitude = 10.05, longitude = 77.15 WHERE city = 'Devikulam' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE service_providers SET latitude = 9.5667, longitude = 76.9833 WHERE city = 'Peermade' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE service_providers SET latitude = 9.9312, longitude = 76.2673 WHERE city = 'Kochi' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE service_providers SET latitude = 9.9816, longitude = 76.2997 WHERE city = 'Ernakulam' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE service_providers SET latitude = 10.1167, longitude = 76.35 WHERE city = 'Aluva' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE service_providers SET latitude = 10.05, longitude = 76.3333 WHERE city = 'Kalamassery' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE service_providers SET latitude = 9.95, longitude = 76.35 WHERE city = 'Tripunithura' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE service_providers SET latitude = 10.0667, longitude = 76.6167 WHERE city = 'Kothamangalam' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE service_providers SET latitude = 10.15, longitude = 76.2167 WHERE city = 'North Paravur' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE service_providers SET latitude = 10.5276, longitude = 76.2144 WHERE city = 'Thrissur' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE service_providers SET latitude = 10.6, longitude = 76.05 WHERE city = 'Guruvayur' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE service_providers SET latitude = 10.2167, longitude = 76.2 WHERE city = 'Kodungallur' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE service_providers SET latitude = 10.3, longitude = 76.3333 WHERE city = 'Chalakudy' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE service_providers SET latitude = 10.7867, longitude = 76.6548 WHERE city = 'Palakkad' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE service_providers SET latitude = 10.7667, longitude = 76.3833 WHERE city = 'Ottapalam' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE service_providers SET latitude = 10.7667, longitude = 76.2833 WHERE city = 'Shoranur' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE service_providers SET latitude = 10.8167, longitude = 76.2 WHERE city = 'Pattambi' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE service_providers SET latitude = 11.0667, longitude = 76.0667 WHERE city = 'Malappuram' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE service_providers SET latitude = 11.1167, longitude = 76.1167 WHERE city = 'Manjeri' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE service_providers SET latitude = 10.9167, longitude = 75.9167 WHERE city = 'Tirur' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE service_providers SET latitude = 10.9833, longitude = 75.9833 WHERE city = 'Kottakkal' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE service_providers SET latitude = 11.2833, longitude = 76.2333 WHERE city = 'Nilambur' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE service_providers SET latitude = 11.2588, longitude = 75.7804 WHERE city = 'Kozhikode' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE service_providers SET latitude = 11.6, longitude = 75.5833 WHERE city = 'Vadakara' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE service_providers SET latitude = 11.4333, longitude = 75.7 WHERE city = 'Koyilandy' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE service_providers SET latitude = 11.6167, longitude = 76.0833 WHERE city = 'Kalpetta' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE service_providers SET latitude = 11.6667, longitude = 76.2667 WHERE city = 'Sulthan Bathery' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE service_providers SET latitude = 11.8, longitude = 76.0 WHERE city = 'Mananthavady' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE service_providers SET latitude = 11.8745, longitude = 75.3704 WHERE city = 'Kannur' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE service_providers SET latitude = 11.75, longitude = 75.4833 WHERE city = 'Thalassery' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE service_providers SET latitude = 12.1, longitude = 75.2 WHERE city = 'Payyannur' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE service_providers SET latitude = 12.05, longitude = 75.35 WHERE city = 'Taliparamba' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE service_providers SET latitude = 12.4996, longitude = 74.9869 WHERE city = 'Kasaragod' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE service_providers SET latitude = 12.3, longitude = 75.1 WHERE city = 'Kanhangad' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE service_providers SET latitude = 12.4, longitude = 75.0333 WHERE city = 'Bekal' AND (latitude IS NULL OR longitude IS NULL);
+-- Legacy city names
+UPDATE service_providers SET latitude = 8.5241, longitude = 76.9366 WHERE city = 'Trivandrum' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE service_providers SET latitude = 11.2588, longitude = 75.7804 WHERE city = 'Calicut' AND (latitude IS NULL OR longitude IS NULL);
 
 -- Also update users with coordinates based on their city
-UPDATE users 
-SET latitude = 9.3816, longitude = 76.5744 
-WHERE city = 'Thiruvalla' AND (latitude IS NULL OR longitude IS NULL);
-
-UPDATE users 
-SET latitude = 9.2647, longitude = 76.7870 
-WHERE city = 'Pathanamthitta' AND (latitude IS NULL OR longitude IS NULL);
-
-UPDATE users 
-SET latitude = 9.9312, longitude = 76.2673 
-WHERE city = 'Kochi' AND (latitude IS NULL OR longitude IS NULL);
-
-UPDATE users 
-SET latitude = 8.5241, longitude = 76.9366 
-WHERE city = 'Trivandrum' AND (latitude IS NULL OR longitude IS NULL);
-
-UPDATE users 
-SET latitude = 9.5916, longitude = 76.5222 
-WHERE city = 'Kottayam' AND (latitude IS NULL OR longitude IS NULL);
-
-UPDATE users 
-SET latitude = 9.4981, longitude = 76.3388 
-WHERE city = 'Alappuzha' AND (latitude IS NULL OR longitude IS NULL);
-
-UPDATE users 
-SET latitude = 10.5276, longitude = 76.2144 
-WHERE city = 'Thrissur' AND (latitude IS NULL OR longitude IS NULL);
-
-UPDATE users 
-SET latitude = 11.2588, longitude = 75.7804 
-WHERE city = 'Calicut' AND (latitude IS NULL OR longitude IS NULL);
-
-UPDATE users 
-SET latitude = 11.8745, longitude = 75.3704 
-WHERE city = 'Kannur' AND (latitude IS NULL OR longitude IS NULL);
-
-UPDATE users 
-SET latitude = 10.7867, longitude = 76.6548 
-WHERE city = 'Palakkad' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE users SET latitude = 8.5241, longitude = 76.9366 WHERE city = 'Thiruvananthapuram' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE users SET latitude = 8.3988, longitude = 77.08 WHERE city = 'Neyyattinkara' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE users SET latitude = 8.6967, longitude = 76.8167 WHERE city = 'Attingal' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE users SET latitude = 8.7375, longitude = 76.7167 WHERE city = 'Varkala' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE users SET latitude = 8.8932, longitude = 76.6141 WHERE city = 'Kollam' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE users SET latitude = 9.0167, longitude = 76.9333 WHERE city = 'Punalur' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE users SET latitude = 9.05, longitude = 76.5333 WHERE city = 'Karunagappally' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE users SET latitude = 9.0, longitude = 76.7667 WHERE city = 'Kottarakkara' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE users SET latitude = 8.8333, longitude = 76.6667 WHERE city = 'Paravur' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE users SET latitude = 9.2647, longitude = 76.7870 WHERE city = 'Pathanamthitta' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE users SET latitude = 9.3816, longitude = 76.5744 WHERE city = 'Thiruvalla' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE users SET latitude = 9.3167, longitude = 76.6167 WHERE city = 'Chengannur' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE users SET latitude = 9.15, longitude = 76.7333 WHERE city = 'Adoor' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE users SET latitude = 9.3833, longitude = 76.8 WHERE city = 'Ranni' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE users SET latitude = 9.3333, longitude = 76.7 WHERE city = 'Kozhencherry' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE users SET latitude = 9.4981, longitude = 76.3388 WHERE city = 'Alappuzha' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE users SET latitude = 9.6833, longitude = 76.3333 WHERE city = 'Cherthala' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE users SET latitude = 9.2667, longitude = 76.55 WHERE city = 'Mavelikkara' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE users SET latitude = 9.1833, longitude = 76.5 WHERE city = 'Kayamkulam' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE users SET latitude = 9.2833, longitude = 76.45 WHERE city = 'Haripad' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE users SET latitude = 9.5916, longitude = 76.5222 WHERE city = 'Kottayam' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE users SET latitude = 9.45, longitude = 76.5333 WHERE city = 'Changanassery' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE users SET latitude = 9.7167, longitude = 76.6833 WHERE city = 'Pala' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE users SET latitude = 9.6667, longitude = 76.5667 WHERE city = 'Ettumanoor' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE users SET latitude = 9.7667, longitude = 76.4 WHERE city = 'Vaikom' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE users SET latitude = 9.7, longitude = 76.7833 WHERE city = 'Erattupetta' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE users SET latitude = 9.85, longitude = 76.9667 WHERE city = 'Idukki' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE users SET latitude = 9.9, longitude = 76.7167 WHERE city = 'Thodupuzha' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE users SET latitude = 10.0889, longitude = 77.0597 WHERE city = 'Munnar' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE users SET latitude = 10.05, longitude = 77.15 WHERE city = 'Devikulam' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE users SET latitude = 9.5667, longitude = 76.9833 WHERE city = 'Peermade' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE users SET latitude = 9.9312, longitude = 76.2673 WHERE city = 'Kochi' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE users SET latitude = 9.9816, longitude = 76.2997 WHERE city = 'Ernakulam' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE users SET latitude = 10.1167, longitude = 76.35 WHERE city = 'Aluva' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE users SET latitude = 10.05, longitude = 76.3333 WHERE city = 'Kalamassery' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE users SET latitude = 9.95, longitude = 76.35 WHERE city = 'Tripunithura' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE users SET latitude = 10.0667, longitude = 76.6167 WHERE city = 'Kothamangalam' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE users SET latitude = 10.15, longitude = 76.2167 WHERE city = 'North Paravur' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE users SET latitude = 10.5276, longitude = 76.2144 WHERE city = 'Thrissur' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE users SET latitude = 10.6, longitude = 76.05 WHERE city = 'Guruvayur' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE users SET latitude = 10.2167, longitude = 76.2 WHERE city = 'Kodungallur' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE users SET latitude = 10.3, longitude = 76.3333 WHERE city = 'Chalakudy' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE users SET latitude = 10.7867, longitude = 76.6548 WHERE city = 'Palakkad' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE users SET latitude = 10.7667, longitude = 76.3833 WHERE city = 'Ottapalam' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE users SET latitude = 10.7667, longitude = 76.2833 WHERE city = 'Shoranur' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE users SET latitude = 10.8167, longitude = 76.2 WHERE city = 'Pattambi' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE users SET latitude = 11.0667, longitude = 76.0667 WHERE city = 'Malappuram' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE users SET latitude = 11.1167, longitude = 76.1167 WHERE city = 'Manjeri' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE users SET latitude = 10.9167, longitude = 75.9167 WHERE city = 'Tirur' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE users SET latitude = 10.9833, longitude = 75.9833 WHERE city = 'Kottakkal' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE users SET latitude = 11.2833, longitude = 76.2333 WHERE city = 'Nilambur' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE users SET latitude = 11.2588, longitude = 75.7804 WHERE city = 'Kozhikode' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE users SET latitude = 11.6, longitude = 75.5833 WHERE city = 'Vadakara' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE users SET latitude = 11.4333, longitude = 75.7 WHERE city = 'Koyilandy' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE users SET latitude = 11.6167, longitude = 76.0833 WHERE city = 'Kalpetta' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE users SET latitude = 11.6667, longitude = 76.2667 WHERE city = 'Sulthan Bathery' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE users SET latitude = 11.8, longitude = 76.0 WHERE city = 'Mananthavady' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE users SET latitude = 11.8745, longitude = 75.3704 WHERE city = 'Kannur' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE users SET latitude = 11.75, longitude = 75.4833 WHERE city = 'Thalassery' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE users SET latitude = 12.1, longitude = 75.2 WHERE city = 'Payyannur' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE users SET latitude = 12.05, longitude = 75.35 WHERE city = 'Taliparamba' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE users SET latitude = 12.4996, longitude = 74.9869 WHERE city = 'Kasaragod' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE users SET latitude = 12.3, longitude = 75.1 WHERE city = 'Kanhangad' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE users SET latitude = 12.4, longitude = 75.0333 WHERE city = 'Bekal' AND (latitude IS NULL OR longitude IS NULL);
+-- Legacy city names
+UPDATE users SET latitude = 8.5241, longitude = 76.9366 WHERE city = 'Trivandrum' AND (latitude IS NULL OR longitude IS NULL);
+UPDATE users SET latitude = 11.2588, longitude = 75.7804 WHERE city = 'Calicut' AND (latitude IS NULL OR longitude IS NULL);
 

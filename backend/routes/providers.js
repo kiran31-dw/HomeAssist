@@ -69,9 +69,22 @@ router.get('/jobs', authenticate, isProvider, async (req, res) => {
             params.push(status);
         }
 
-        query += ' ORDER BY b.booking_date DESC, b.booking_time DESC';
+        query += ` ORDER BY 
+            CASE 
+                WHEN b.status = 'pending' THEN 1
+                WHEN b.status = 'confirmed' THEN 2
+                WHEN b.status = 'in_progress' THEN 3
+                ELSE 4
+            END ASC,
+            b.created_at DESC`;
 
         const [jobs] = await pool.execute(query, params);
+        
+        // Log booking times for debugging
+        jobs.forEach(job => {
+            console.log(`Job ${job.booking_id}: booking_time = ${job.booking_time}, status = ${job.status}, created_at = ${job.created_at}`);
+        });
+        
         res.json({ jobs });
     } catch (error) {
         console.error('Get jobs error:', error);

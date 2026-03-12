@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { formatCurrency, formatCurrencyShort } from '../../utils/currency';
+import { formatTime } from '../../utils/time';
 import '../Dashboard.css';
 
 const AdminDashboard = () => {
@@ -219,13 +220,100 @@ const AdminDashboard = () => {
                   {complaints.map(complaint => (
                     <div key={complaint.complaint_id} className="complaint-card">
                       <div className="complaint-header">
-                        <h4>{complaint.complaint_type}</h4>
-                        <span className={`status status-${complaint.status}`}>{complaint.status}</span>
+                        <h4>{complaint.complaint_type?.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase()) || 'N/A'}</h4>
+                        <span className={`status status-${complaint.status}`}>{complaint.status?.replace('_', ' ').toUpperCase() || 'PENDING'}</span>
                       </div>
-                      <p>{complaint.complaint_text}</p>
-                      {complaint.admin_response && (
-                        <p><strong>Admin Response:</strong> {complaint.admin_response}</p>
+                      
+                      <div style={{ marginBottom: '15px', padding: '12px', backgroundColor: '#f5f5f5', borderRadius: '6px' }}>
+                        <h5 style={{ marginBottom: '10px', color: '#d32f2f' }}>📋 Complaint Details</h5>
+                        <p style={{ marginBottom: '8px', lineHeight: '1.6' }}><strong>Description:</strong> {complaint.complaint_text}</p>
+                        <p style={{ marginBottom: '0', fontSize: '12px', color: '#666' }}>
+                          Submitted: {complaint.created_at ? new Date(complaint.created_at).toLocaleString() : 'N/A'}
+                        </p>
+                      </div>
+
+                      <div style={{ marginBottom: '15px', padding: '12px', backgroundColor: '#e3f2fd', borderRadius: '6px' }}>
+                        <h5 style={{ marginBottom: '10px', color: '#1976d2' }}>👤 Complainant (User)</h5>
+                        <p style={{ marginBottom: '5px' }}>
+                          <strong>Name:</strong> {complaint.user_first_name || 'N/A'} {complaint.user_last_name || ''}
+                        </p>
+                        <p style={{ marginBottom: '5px' }}>
+                          <strong>Email:</strong> {complaint.user_email || 'N/A'}
+                        </p>
+                        <p style={{ marginBottom: '5px' }}>
+                          <strong>Phone:</strong> {complaint.user_phone || 'N/A'}
+                        </p>
+                        {complaint.user_city && (
+                          <p style={{ marginBottom: '0' }}>
+                            <strong>Location:</strong> {complaint.user_city}
+                          </p>
+                        )}
+                      </div>
+
+                      <div style={{ marginBottom: '15px', padding: '12px', backgroundColor: '#fff3e0', borderRadius: '6px' }}>
+                        <h5 style={{ marginBottom: '10px', color: '#e65100' }}>🔧 Service Provider</h5>
+                        <p style={{ marginBottom: '5px' }}>
+                          <strong>Name:</strong> {complaint.provider_business_name || `${complaint.provider_first_name || ''} ${complaint.provider_last_name || ''}`.trim() || 'N/A'}
+                        </p>
+                        {complaint.provider_category && (
+                          <p style={{ marginBottom: '5px' }}>
+                            <strong>Category:</strong> {complaint.provider_category}
+                          </p>
+                        )}
+                        {complaint.provider_email && (
+                          <p style={{ marginBottom: '5px' }}>
+                            <strong>Email:</strong> {complaint.provider_email}
+                          </p>
+                        )}
+                        {complaint.provider_phone && (
+                          <p style={{ marginBottom: '0' }}>
+                            <strong>Phone:</strong> {complaint.provider_phone}
+                          </p>
+                        )}
+                      </div>
+
+                      {complaint.booking_id && (
+                        <div style={{ marginBottom: '15px', padding: '12px', backgroundColor: '#f1f8e9', borderRadius: '6px' }}>
+                          <h5 style={{ marginBottom: '10px', color: '#558b2f' }}>📅 Booking Information</h5>
+                          {complaint.service_name && (
+                            <p style={{ marginBottom: '5px' }}>
+                              <strong>Service:</strong> {complaint.service_name}
+                              {complaint.service_category && ` (${complaint.service_category})`}
+                            </p>
+                          )}
+                          {complaint.booking_date && (
+                            <p style={{ marginBottom: '5px' }}>
+                              <strong>Date:</strong> {new Date(complaint.booking_date).toLocaleDateString()}
+                              {complaint.booking_time && ` at ${formatTime(complaint.booking_time)}`}
+                            </p>
+                          )}
+                          {complaint.service_address && (
+                            <p style={{ marginBottom: '5px' }}>
+                              <strong>Address:</strong> {complaint.service_address}
+                            </p>
+                          )}
+                          {complaint.total_cost && (
+                            <p style={{ marginBottom: '0' }}>
+                              <strong>Total Cost:</strong> {formatCurrencyShort(complaint.total_cost)}
+                            </p>
+                          )}
+                        </div>
                       )}
+
+                      {complaint.admin_response && (
+                        <div style={{ marginBottom: '15px', padding: '12px', backgroundColor: '#e8f5e9', borderRadius: '6px', borderLeft: '4px solid #4caf50' }}>
+                          <p style={{ marginBottom: '5px' }}>
+                            <strong style={{ color: '#2e7d32' }}>✅ Admin Response:</strong>
+                          </p>
+                          <p style={{ marginTop: '5px', color: '#333', whiteSpace: 'pre-wrap' }}>{complaint.admin_response}</p>
+                          {complaint.updated_at && (
+                            <p style={{ marginTop: '8px', fontSize: '11px', color: '#666' }}>
+                              Updated: {new Date(complaint.updated_at).toLocaleString()}
+                            </p>
+                          )}
+                        </div>
+                      )}
+
                       <div className="complaint-actions">
                         <select
                           onChange={(e) => {

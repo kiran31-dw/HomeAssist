@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { formatCurrency, formatCurrencyShort } from '../../utils/currency';
@@ -10,12 +10,7 @@ const BrowseServices = () => {
   const [selectedCategory, setSelectedCategory] = useState('');
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    fetchServices();
-    fetchProviders();
-  }, [selectedCategory]);
-
-  const fetchServices = async () => {
+  const fetchServices = useCallback(async () => {
     try {
       const params = selectedCategory ? { category: selectedCategory } : {};
       const response = await axios.get('/api/users/services', { params });
@@ -23,9 +18,9 @@ const BrowseServices = () => {
     } catch (error) {
       console.error('Error fetching services:', error);
     }
-  };
+  }, [selectedCategory]);
 
-  const fetchProviders = async () => {
+  const fetchProviders = useCallback(async () => {
     try {
       const params = selectedCategory ? { category: selectedCategory } : {};
       const response = await axios.get('/api/users/providers', { params });
@@ -35,7 +30,13 @@ const BrowseServices = () => {
       console.error('Error fetching providers:', error);
       setLoading(false);
     }
-  };
+  }, [selectedCategory]);
+
+  useEffect(() => {
+    setLoading(true);
+    fetchServices();
+    fetchProviders();
+  }, [fetchServices, fetchProviders]);
 
   const categories = ['Electrical', 'Plumbing', 'Painting', 'Carpentry', 'HVAC', 'Appliance', 'Cleaning', 'General'];
 
@@ -108,6 +109,11 @@ const BrowseServices = () => {
                     </p>
                     <p className="provider-location">
                       📍 {provider.city || 'N/A'}
+                      {provider.distance !== null && provider.distance !== undefined && (
+                        <span style={{ marginLeft: '8px', color: '#686b78' }}>
+                          • {parseFloat(provider.distance).toFixed(1)} km away
+                        </span>
+                      )}
                     </p>
                     <p className={`status status-${provider.availability_status}`} style={{ marginTop: '12px' }}>
                       {provider.availability_status === 'available' ? '✅ Available' : 
@@ -115,7 +121,10 @@ const BrowseServices = () => {
                        '⚫ Offline'}
                     </p>
                   </div>
-                  <Link to={`/user/providers/${provider.provider_id}`} className="btn btn-primary">
+                  <Link 
+                    to={`/user/providers/${provider.provider_id}${selectedCategory ? `?category=${encodeURIComponent(selectedCategory)}` : provider.service_category ? `?category=${encodeURIComponent(provider.service_category)}` : ''}`} 
+                    className="btn btn-primary"
+                  >
                     View Profile
                   </Link>
                 </div>

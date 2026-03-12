@@ -25,6 +25,14 @@ router.post('/', authenticate, [
         const { provider_id, service_id, booking_date, booking_time, service_address, 
                 service_description, urgency_level, total_cost, estimated_duration } = req.body;
 
+        // Validate booking_time format
+        if (!booking_time || !booking_time.match(/^([0-1][0-9]|2[0-3]):[0-5][0-9]$/)) {
+            return res.status(400).json({ message: 'Invalid booking time format. Please use HH:MM format.' });
+        }
+
+        // Log the booking time being stored (for debugging)
+        console.log('Storing booking with time:', booking_time, 'for date:', booking_date);
+
         // Verify provider exists, is verified, and is available
         const [providers] = await pool.execute(
             'SELECT provider_id, verification_status, availability_status FROM service_providers WHERE provider_id = ?',

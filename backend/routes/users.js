@@ -1,6 +1,8 @@
 const express = require('express');
 const pool = require('../config/database');
 const { authenticate } = require('../middleware/auth');
+const { optionalAuthenticate } = require('../middleware/optionalAuth');
+const { getCityCoordinates, calculateDistance, sortProvidersByRelevance } = require('../utils/location');
 const router = express.Router();
 
 // Get user profile
@@ -35,10 +37,21 @@ router.put('/profile', authenticate, async (req, res) => {
 
         const { first_name, last_name, phone, address, city, state, zip_code } = req.body;
 
+        // Get city coordinates if city is provided
+        let latitude = null;
+        let longitude = null;
+        if (city) {
+            const coords = getCityCoordinates(city);
+            if (coords) {
+                latitude = coords.lat;
+                longitude = coords.lon;
+            }
+        }
+
         await pool.execute(
-            `UPDATE users SET first_name = ?, last_name = ?, phone = ?, address = ?, city = ?, state = ?, zip_code = ? 
+            `UPDATE users SET first_name = ?, last_name = ?, phone = ?, address = ?, city = ?, state = ?, zip_code = ?, latitude = ?, longitude = ? 
              WHERE user_id = ?`,
-            [first_name, last_name, phone, address, city, state, zip_code, req.user.id]
+            [first_name, last_name, phone, address, city, state, zip_code, latitude, longitude, req.user.id]
         );
 
         res.json({ message: 'Profile updated successfully' });
@@ -73,26 +86,77 @@ router.get('/services', async (req, res) => {
     }
 });
 
-// Get service providers (no location filtering)
-router.get('/providers', async (req, res) => {
+// Get service providers with location-based filtering
+router.get('/providers', optionalAuthenticate, async (req, res) => {
     try {
-        const { category, city, min_rating } = req.query;
+        const { category, min_rating } = req.query;
+        const maxDistance = 50; // Maximum distance in km
 
-        let query = `SELECT provider_id, first_name, last_name, business_name, service_category, 
-                            rating, total_reviews, hourly_rate, city, state, availability_status
-                   FROM service_providers 
-                   WHERE verification_status = 'verified' 
-                   AND availability_status = 'available'`; // Only show available providers
-        const params = [];
+        // Get user location if authenticated
+        let userLat = null;
+        let userLon = null;
+        if (req.user && req.user.role === 'user') {
+            const [users] = await pool.execute(
+                'SELECT city, latitude, longitude FROM users WHERE user_id = ?',
+                [req.user.id]
+            );
+            
+            if (users.length > 0) {
+                const user = users[0];
+                // Use stored coordinates if available, otherwise get from city name
+                if (user.latitude && user.longitude) {
+                    userLat = parseFloat(user.latitude);
+                    userLon = parseFloat(user.longitude);
+                } else if (user.city) {
+                    const cityCoords = getCityCoordinates(user.city);
+                    if (cityCoords) {
+                        userLat = cityCoords.lat;
+                        userLon = cityCoords.lon;
+                    }
+                }
+            }
+        }
+
+        let query;
+        let params = [];
+
+        if (userLat && userLon) {
+            // Location-based query with distance calculation
+            query = `
+                SELECT p.provider_id, p.first_name, p.last_name, p.business_name, 
+                       p.service_category, p.rating, p.total_reviews, p.hourly_rate, 
+                       p.city, p.state, p.availability_status, p.latitude, p.longitude,
+                       CASE 
+                           WHEN p.latitude IS NOT NULL AND p.longitude IS NOT NULL THEN
+                               (6371 * acos(
+                                   cos(radians(?)) * 
+                                   cos(radians(p.latitude)) * 
+                                   cos(radians(p.longitude) - radians(?)) + 
+                                   sin(radians(?)) * 
+                                   sin(radians(p.latitude))
+                               ))
+                           ELSE NULL
+                       END AS distance
+                FROM service_providers p
+                WHERE p.verification_status = 'verified' 
+                AND p.availability_status = 'available'
+            `;
+            params = [userLat, userLon, userLat];
+        } else {
+            // Fallback: no location filtering
+            query = `
+                SELECT provider_id, first_name, last_name, business_name, service_category, 
+                       rating, total_reviews, hourly_rate, city, state, availability_status,
+                       latitude, longitude, NULL AS distance
+                FROM service_providers 
+                WHERE verification_status = 'verified' 
+                AND availability_status = 'available'
+            `;
+        }
 
         if (category) {
             query += ' AND service_category = ?';
             params.push(category);
-        }
-
-        if (city) {
-            query += ' AND city = ?';
-            params.push(city);
         }
 
         if (min_rating) {
@@ -100,13 +164,41 @@ router.get('/providers', async (req, res) => {
             params.push(parseFloat(min_rating));
         }
 
-        // Sort by: availability → rating → reviews
-        query += ` ORDER BY 
-            availability_status = 'available' DESC,
-            rating DESC,
-            total_reviews DESC`;
+        if (userLat && userLon) {
+            query += ` HAVING distance IS NULL OR distance <= ?
+                      ORDER BY 
+                          CASE WHEN distance IS NOT NULL THEN distance ELSE 999 END ASC,
+                          rating DESC,
+                          total_reviews DESC`;
+            params.push(maxDistance);
+        } else {
+            query += ` ORDER BY 
+                availability_status = 'available' DESC,
+                rating DESC,
+                total_reviews DESC`;
+        }
 
-        const [providers] = await pool.execute(query, params);
+        let [providers] = await pool.execute(query, params);
+
+        // For providers without coordinates in DB, calculate distance using city coordinates
+        if (userLat && userLon && providers.length > 0) {
+            providers = providers.map(provider => {
+                if (!provider.distance && provider.city) {
+                    const providerCoords = getCityCoordinates(provider.city);
+                    if (providerCoords) {
+                        provider.distance = calculateDistance(
+                            userLat, userLon,
+                            providerCoords.lat, providerCoords.lon
+                        );
+                    }
+                }
+                return provider;
+            });
+            
+            // Filter by max distance and sort
+            providers = providers.filter(p => !p.distance || p.distance <= maxDistance);
+            providers = sortProvidersByRelevance(providers);
+        }
 
         res.json({ providers });
     } catch (error) {

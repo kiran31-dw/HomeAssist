@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { formatCurrency } from '../../utils/currency';
+import { formatTime } from '../../utils/time';
 import '../Dashboard.css';
 
 // Helper function to get status color
@@ -155,7 +156,7 @@ const MyBookings = () => {
                   <p><strong>Provider:</strong> {booking.provider_first_name} {booking.provider_last_name}</p>
                   {booking.business_name && <p><strong>Business:</strong> {booking.business_name}</p>}
                   <p><strong>Date:</strong> {new Date(booking.booking_date).toLocaleDateString()}</p>
-                  <p><strong>Time:</strong> {booking.booking_time}</p>
+                  <p><strong>Time:</strong> {formatTime(booking.booking_time)}</p>
                   <p><strong>Address:</strong> {booking.service_address}</p>
                   {booking.service_description && <p><strong>Description:</strong> {booking.service_description}</p>}
                   {booking.total_cost && <p><strong>Cost:</strong> {formatCurrency(booking.total_cost)}</p>}

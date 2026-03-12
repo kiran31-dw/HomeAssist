@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { formatCurrency } from '../../utils/currency';
+import { formatTime } from '../../utils/time';
 import '../Dashboard.css';
 
 const ProviderDashboard = () => {
@@ -113,7 +114,7 @@ const ProviderDashboard = () => {
                       <p><strong>Customer:</strong> {job.user_first_name} {job.user_last_name}</p>
                       <p><strong>Contact:</strong> {job.user_phone} | {job.user_email}</p>
                       <p><strong>Date:</strong> {new Date(job.booking_date).toLocaleDateString()}</p>
-                      <p><strong>Time:</strong> {job.booking_time}</p>
+                      <p><strong>Time:</strong> {formatTime(job.booking_time)}</p>
                       <p><strong>Address:</strong> {job.service_address}</p>
                       {job.service_description && <p><strong>Description:</strong> {job.service_description}</p>}
                       {job.total_cost && <p><strong>Cost:</strong> {formatCurrency(job.total_cost)}</p>}

@@ -83,10 +83,17 @@ router.get('/complaints', authenticate, isAdmin, async (req, res) => {
         const { status } = req.query;
         let query = `SELECT c.*, 
                             u.first_name as user_first_name, u.last_name as user_last_name,
-                            p.first_name as provider_first_name, p.last_name as provider_last_name
+                            u.email as user_email, u.phone as user_phone, u.city as user_city,
+                            p.first_name as provider_first_name, p.last_name as provider_last_name,
+                            p.business_name as provider_business_name, p.email as provider_email,
+                            p.phone as provider_phone, p.service_category as provider_category,
+                            b.booking_date, b.booking_time, b.service_address, b.total_cost,
+                            s.service_name, s.service_category as service_category
                      FROM complaints c
                      LEFT JOIN users u ON c.user_id = u.user_id
-                     LEFT JOIN service_providers p ON c.provider_id = p.provider_id`;
+                     LEFT JOIN service_providers p ON c.provider_id = p.provider_id
+                     LEFT JOIN bookings b ON c.booking_id = b.booking_id
+                     LEFT JOIN services s ON b.service_id = s.service_id`;
         const params = [];
 
         if (status) {

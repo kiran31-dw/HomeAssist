@@ -48,8 +48,12 @@ const Chatbot = () => {
   const handleBookProvider = async (providerId, serviceId) => {
     if (!suggestions) return;
 
+    // Get current system time
+    const now = new Date();
+    const currentTime = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+    
     const bookingDate = suggestions.suggestedDateTime?.date || new Date().toISOString().split('T')[0];
-    const bookingTime = suggestions.suggestedDateTime?.time || '10:00';
+    const bookingTime = suggestions.suggestedDateTime?.time || currentTime;
 
     // Get service address with validation
     let serviceAddress = '';

@@ -72,26 +72,96 @@ function sortProvidersByRelevance(providers) {
 }
 
 /**
- * Get city coordinates (example cities in Kerala, India)
+ * Get city coordinates (all cities in Kerala, India)
  * This is a simple lookup - in production, use a geocoding API
  */
 const cityCoordinates = {
-    'Thiruvalla': { lat: 9.3816, lon: 76.5744 },
+    'Thiruvananthapuram': { lat: 8.5241, lon: 76.9366 },
+    'Neyyattinkara': { lat: 8.3988, lon: 77.08 },
+    'Attingal': { lat: 8.6967, lon: 76.8167 },
+    'Varkala': { lat: 8.7375, lon: 76.7167 },
+    'Kollam': { lat: 8.8932, lon: 76.6141 },
+    'Punalur': { lat: 9.0167, lon: 76.9333 },
+    'Karunagappally': { lat: 9.05, lon: 76.5333 },
+    'Kottarakkara': { lat: 9.0, lon: 76.7667 },
+    'Paravur': { lat: 8.8333, lon: 76.6667 },
     'Pathanamthitta': { lat: 9.2647, lon: 76.7870 },
-    'Kochi': { lat: 9.9312, lon: 76.2673 },
-    'Trivandrum': { lat: 8.5241, lon: 76.9366 },
-    'Kottayam': { lat: 9.5916, lon: 76.5222 },
+    'Thiruvalla': { lat: 9.3816, lon: 76.5744 },
+    'Chengannur': { lat: 9.3167, lon: 76.6167 },
+    'Adoor': { lat: 9.15, lon: 76.7333 },
+    'Ranni': { lat: 9.3833, lon: 76.8 },
+    'Kozhencherry': { lat: 9.3333, lon: 76.7 },
     'Alappuzha': { lat: 9.4981, lon: 76.3388 },
+    'Cherthala': { lat: 9.6833, lon: 76.3333 },
+    'Mavelikkara': { lat: 9.2667, lon: 76.55 },
+    'Kayamkulam': { lat: 9.1833, lon: 76.5 },
+    'Haripad': { lat: 9.2833, lon: 76.45 },
+    'Kottayam': { lat: 9.5916, lon: 76.5222 },
+    'Changanassery': { lat: 9.45, lon: 76.5333 },
+    'Pala': { lat: 9.7167, lon: 76.6833 },
+    'Ettumanoor': { lat: 9.6667, lon: 76.5667 },
+    'Vaikom': { lat: 9.7667, lon: 76.4 },
+    'Erattupetta': { lat: 9.7, lon: 76.7833 },
+    'Idukki': { lat: 9.85, lon: 76.9667 },
+    'Thodupuzha': { lat: 9.9, lon: 76.7167 },
+    'Munnar': { lat: 10.0889, lon: 77.0597 },
+    'Devikulam': { lat: 10.05, lon: 77.15 },
+    'Peermade': { lat: 9.5667, lon: 76.9833 },
+    'Kochi': { lat: 9.9312, lon: 76.2673 },
+    'Ernakulam': { lat: 9.9816, lon: 76.2997 },
+    'Aluva': { lat: 10.1167, lon: 76.35 },
+    'Kalamassery': { lat: 10.05, lon: 76.3333 },
+    'Tripunithura': { lat: 9.95, lon: 76.35 },
+    'Kothamangalam': { lat: 10.0667, lon: 76.6167 },
+    'North Paravur': { lat: 10.15, lon: 76.2167 },
     'Thrissur': { lat: 10.5276, lon: 76.2144 },
-    'Calicut': { lat: 11.2588, lon: 75.7804 },
+    'Guruvayur': { lat: 10.6, lon: 76.05 },
+    'Kodungallur': { lat: 10.2167, lon: 76.2 },
+    'Chalakudy': { lat: 10.3, lon: 76.3333 },
+    'Palakkad': { lat: 10.7867, lon: 76.6548 },
+    'Ottapalam': { lat: 10.7667, lon: 76.3833 },
+    'Shoranur': { lat: 10.7667, lon: 76.2833 },
+    'Pattambi': { lat: 10.8167, lon: 76.2 },
+    'Malappuram': { lat: 11.0667, lon: 76.0667 },
+    'Manjeri': { lat: 11.1167, lon: 76.1167 },
+    'Tirur': { lat: 10.9167, lon: 75.9167 },
+    'Kottakkal': { lat: 10.9833, lon: 75.9833 },
+    'Nilambur': { lat: 11.2833, lon: 76.2333 },
+    'Kozhikode': { lat: 11.2588, lon: 75.7804 },
+    'Vadakara': { lat: 11.6, lon: 75.5833 },
+    'Koyilandy': { lat: 11.4333, lon: 75.7 },
+    'Kalpetta': { lat: 11.6167, lon: 76.0833 },
+    'Sulthan Bathery': { lat: 11.6667, lon: 76.2667 },
+    'Mananthavady': { lat: 11.8, lon: 76.0 },
     'Kannur': { lat: 11.8745, lon: 75.3704 },
-    'Palakkad': { lat: 10.7867, lon: 76.6548 }
+    'Thalassery': { lat: 11.75, lon: 75.4833 },
+    'Payyannur': { lat: 12.1, lon: 75.2 },
+    'Taliparamba': { lat: 12.05, lon: 75.35 },
+    'Kasaragod': { lat: 12.4996, lon: 74.9869 },
+    'Kanhangad': { lat: 12.3, lon: 75.1 },
+    'Bekal': { lat: 12.4, lon: 75.0333 },
+    // Legacy names for backward compatibility
+    'Trivandrum': { lat: 8.5241, lon: 76.9366 },
+    'Calicut': { lat: 11.2588, lon: 75.7804 }
 };
 
 function getCityCoordinates(cityName) {
     if (!cityName) return null;
-    const city = cityCoordinates[cityName] || cityCoordinates[cityName.toLowerCase()];
-    return city || null;
+    
+    // Try exact match first
+    if (cityCoordinates[cityName]) {
+        return cityCoordinates[cityName];
+    }
+    
+    // Try case-insensitive match
+    const cityLower = cityName.toLowerCase();
+    for (const [key, value] of Object.entries(cityCoordinates)) {
+        if (key.toLowerCase() === cityLower) {
+            return value;
+        }
+    }
+    
+    return null;
 }
 
 module.exports = {

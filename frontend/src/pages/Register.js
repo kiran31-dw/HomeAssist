@@ -1,10 +1,77 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { AuthContext } from '../context/AuthContext';
 import './Auth.css';
 
 const Register = () => {
+  const cities = [
+    'Thiruvananthapuram',
+    'Neyyattinkara',
+    'Attingal',
+    'Varkala',
+    'Kollam',
+    'Punalur',
+    'Karunagappally',
+    'Kottarakkara',
+    'Paravur',
+    'Pathanamthitta',
+    'Thiruvalla',
+    'Chengannur',
+    'Adoor',
+    'Ranni',
+    'Kozhencherry',
+    'Alappuzha',
+    'Cherthala',
+    'Mavelikkara',
+    'Kayamkulam',
+    'Haripad',
+    'Kottayam',
+    'Changanassery',
+    'Pala',
+    'Ettumanoor',
+    'Vaikom',
+    'Erattupetta',
+    'Idukki',
+    'Thodupuzha',
+    'Munnar',
+    'Devikulam',
+    'Peermade',
+    'Kochi',
+    'Ernakulam',
+    'Aluva',
+    'Kalamassery',
+    'Tripunithura',
+    'Kothamangalam',
+    'North Paravur',
+    'Thrissur',
+    'Guruvayur',
+    'Kodungallur',
+    'Chalakudy',
+    'Palakkad',
+    'Ottapalam',
+    'Shoranur',
+    'Pattambi',
+    'Malappuram',
+    'Manjeri',
+    'Tirur',
+    'Kottakkal',
+    'Nilambur',
+    'Kozhikode',
+    'Vadakara',
+    'Koyilandy',
+    'Kalpetta',
+    'Sulthan Bathery',
+    'Mananthavady',
+    'Kannur',
+    'Thalassery',
+    'Payyannur',
+    'Taliparamba',
+    'Kasaragod',
+    'Kanhangad',
+    'Bekal'
+  ];
+
   const [formData, setFormData] = useState({
     role: 'user',
     first_name: '',
@@ -25,12 +92,55 @@ const Register = () => {
     hourly_rate: ''
   });
   const [error, setError] = useState('');
+  const [citySearch, setCitySearch] = useState('');
+  const [showCityDropdown, setShowCityDropdown] = useState(false);
+  const cityDropdownRef = useRef(null);
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (cityDropdownRef.current && !cityDropdownRef.current.contains(event.target)) {
+        setShowCityDropdown(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
+
+  const handleCitySearch = (e) => {
+    const value = e.target.value;
+    setCitySearch(value);
+    setShowCityDropdown(true);
+    if (!value) {
+      setFormData({ ...formData, city: '' });
+    } else {
+      // Auto-select if exact match found
+      const exactMatch = cities.find(city => city.toLowerCase() === value.toLowerCase());
+      if (exactMatch) {
+        setFormData({ ...formData, city: exactMatch });
+      } else {
+        setFormData({ ...formData, city: '' });
+      }
+    }
+  };
+
+  const handleCitySelect = (city) => {
+    setFormData({ ...formData, city });
+    setCitySearch(city);
+    setShowCityDropdown(false);
+  };
+
+  const filteredCities = cities.filter(city =>
+    city.toLowerCase().includes(citySearch.toLowerCase())
+  );
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -233,19 +343,35 @@ const Register = () => {
           </div>
           <div className="form-group">
             <label>City</label>
-            <select name="city" value={formData.city} onChange={handleChange}>
-              <option value="">Select City</option>
-              <option value="Thiruvalla">Thiruvalla</option>
-              <option value="Pathanamthitta">Pathanamthitta</option>
-              <option value="Kochi">Kochi</option>
-              <option value="Trivandrum">Trivandrum</option>
-              <option value="Kottayam">Kottayam</option>
-              <option value="Alappuzha">Alappuzha</option>
-              <option value="Thrissur">Thrissur</option>
-              <option value="Calicut">Calicut</option>
-              <option value="Kannur">Kannur</option>
-              <option value="Palakkad">Palakkad</option>
-            </select>
+            <div className="city-search-container" ref={cityDropdownRef}>
+              <input
+                type="text"
+                name="city"
+                value={citySearch}
+                onChange={handleCitySearch}
+                onFocus={() => setShowCityDropdown(true)}
+                placeholder="Search or select city..."
+                className="city-search-input"
+              />
+              {showCityDropdown && filteredCities.length > 0 && (
+                <div className="city-dropdown">
+                  {filteredCities.map((city) => (
+                    <div
+                      key={city}
+                      className="city-option"
+                      onClick={() => handleCitySelect(city)}
+                    >
+                      {city}
+                    </div>
+                  ))}
+                </div>
+              )}
+              {showCityDropdown && citySearch && filteredCities.length === 0 && (
+                <div className="city-dropdown">
+                  <div className="city-option no-results">No cities found</div>
+                </div>
+              )}
+            </div>
           </div>
           <div className="form-group">
             <label>State</label>

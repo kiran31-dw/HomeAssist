@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import Chatbot from '../../components/Chatbot';
+import { formatTime } from '../../utils/time';
 import '../Dashboard.css';
 
 const UserDashboard = () => {
@@ -55,7 +56,7 @@ const UserDashboard = () => {
                     <div>
                       <strong>{booking.service_name}</strong>
                       <p>Provider: {booking.provider_first_name} {booking.provider_last_name}</p>
-                      <p>Date: {new Date(booking.booking_date).toLocaleDateString()} at {booking.booking_time}</p>
+                      <p>Date: {new Date(booking.booking_date).toLocaleDateString()} at {formatTime(booking.booking_time)}</p>
                       <p>Status: <span className={`status status-${booking.status}`}>{booking.status}</span></p>
                     </div>
                   </div>

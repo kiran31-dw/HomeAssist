@@ -600,21 +600,24 @@ function extractDateTime(message) {
     const lowerMessage = message.toLowerCase();
     const today = new Date();
     
+    // Get current system time
+    const currentTime = `${today.getHours().toString().padStart(2, '0')}:${today.getMinutes().toString().padStart(2, '0')}`;
+    
     // Check for specific days
     if (lowerMessage.includes('today')) {
-        return { date: today.toISOString().split('T')[0], time: '10:00' };
+        return { date: today.toISOString().split('T')[0], time: currentTime };
     }
     if (lowerMessage.includes('tomorrow')) {
         const tomorrow = new Date(today);
         tomorrow.setDate(tomorrow.getDate() + 1);
-        return { date: tomorrow.toISOString().split('T')[0], time: '10:00' };
+        return { date: tomorrow.toISOString().split('T')[0], time: currentTime };
     }
     if (lowerMessage.includes('monday') || lowerMessage.includes('tuesday') || 
         lowerMessage.includes('wednesday') || lowerMessage.includes('thursday') || 
         lowerMessage.includes('friday') || lowerMessage.includes('saturday') || 
         lowerMessage.includes('sunday')) {
-        // Default to next occurrence of that day
-        return { date: null, time: '10:00' };
+        // Default to next occurrence of that day with current time
+        return { date: null, time: currentTime };
     }
     
     // Check for time mentions
