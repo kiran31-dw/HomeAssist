@@ -4,6 +4,17 @@ require('dotenv').config();
 
 const app = express();
 
+// Global error handlers to prevent silent crashes and log root causes
+process.on('uncaughtException', (err) => {
+    console.error('FATAL: Uncaught Exception:', err);
+    // process.exit(1); // Optional: keep process alive or exit after logging
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+    console.error('FATAL: Unhandled Promise Rejection at:', promise, 'reason:', reason);
+});
+
+
 // Middleware
 app.use(cors());
 app.use(express.json());
@@ -17,6 +28,7 @@ app.use('/api/providers', require('./routes/providers'));
 app.use('/api/admin', require('./routes/admin'));
 app.use('/api/chatbot', require('./routes/chatbot'));
 app.use('/api/complaints', require('./routes/complaints'));
+app.use('/api/payments', require('./routes/payments')); // Dummy payment integration
 app.use('/api/debug', require('./routes/debug')); // Debug routes
 
 // Health check

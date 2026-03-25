@@ -143,6 +143,27 @@
 │ password        │  │
 │ created_at      │  │
 └─────────────────┘  │
+                     │
+┌─────────────────┐  │
+│    PAYMENTS     │  │
+├─────────────────┤  │
+│ id (PK)         │  │
+│ booking_id (FK) │──┘
+│ user_id (FK)    │
+│ provider_id(FK) │
+│ amount_paid     │
+│ payment_status  │
+│ transaction_id  │
+└─────────────────┘
+
+┌─────────────────┐
+│ ADMIN_REVENUE   │
+├─────────────────┤
+│ id (PK)         │
+│ payment_id (FK) │
+│ booking_id (FK) │
+│ amount          │
+└─────────────────┘
 ```
 
 ### Relationships Summary
@@ -187,6 +208,14 @@
 10. **Bookings → Complaints**: One-to-Many (1:N)
     - One booking can have many complaints
     - Foreign Key: `complaints.booking_id` → `bookings.booking_id` (ON DELETE SET NULL)
+
+11. **Bookings → Payments**: One-to-Many (1:N)
+    - One booking can have multiple payment attempts
+    - Foreign Key: `payments.booking_id` → `bookings.booking_id`
+
+12. **Payments → Admin Revenue**: One-to-One (1:1)
+    - One successful payment creates one admin revenue record
+    - Foreign Key: `admin_revenue.payment_id` → `payments.id`
 
 ---
 
@@ -492,6 +521,8 @@ React Component Update
 │    service_desc     │  │
 │    urgency_level    │  │
 │    status           │  │
+│    payment_status   │  │
+│    payment_id       │  │
 │    total_cost       │  │
 │    estimated_duration│ │
 │    created_at       │  │
@@ -543,6 +574,28 @@ React Component Update
 │ UK email            │
 │    password (hash)  │
 │    created_at       │
+└─────────────────────┘
+
+┌─────────────────────┐
+│      payments       │
+├─────────────────────┤
+│ PK id               │
+│ FK booking_id       │
+│ FK user_id          │
+│ FK provider_id      │
+│    amount_paid      │
+│    payment_status   │
+│    transaction_id   │
+└─────────────────────┘
+
+┌─────────────────────┐
+│   admin_revenue     │
+├─────────────────────┤
+│ PK id               │
+│ FK payment_id       │
+│ FK booking_id       │
+│    amount           │
+│    source           │
 └─────────────────────┘
 ```
 
@@ -641,20 +694,20 @@ React Component Update
 │   "electric"]   │
 └────┬────────────┘
      │
-     │ 3. Check misspellings
+     │ 3. Semantic Intent & Typos
      ▼
-┌─────────────────┐
-│  Misspelling    │
-│  Correction     │
-└────┬────────────┘
+┌────────────────────┐
+│  Regex Context +   │
+│  Typo Correction   │
+└────┬───────────────┘
      │
-     │ 4. Keyword matching
+     │ 4. Hard-Lock Routing
      ▼
-┌─────────────────┐
-│  Service Type   │
-│  Extraction     │
-│  → "Electrical" │
-└────┬────────────┘
+┌────────────────────┐
+│  Service Type      │
+│  Extraction        │
+│  → "Electrical"    │
+└────┬───────────────┘
      │
      │ 5. Urgency detection
      ▼

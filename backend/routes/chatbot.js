@@ -87,8 +87,8 @@ router.post('/book', authenticate, async (req, res) => {
         const [result] = await pool.execute(
             `INSERT INTO bookings 
              (user_id, provider_id, service_id, booking_date, booking_time, service_address, 
-              service_description, urgency_level, total_cost, status) 
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending')`,
+              service_description, urgency_level, total_cost, status, payment_status) 
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending_payment', 'unpaid')`,
             [req.user.id, provider_id, service_id, booking_date, booking_time, service_address,
              service_description || null, urgency_level || 'medium', total_cost || null]
         );

@@ -89,8 +89,8 @@ router.post('/', authenticate, [
         const [result] = await pool.execute(
             `INSERT INTO bookings 
              (user_id, provider_id, service_id, booking_date, booking_time, service_address, 
-              service_description, urgency_level, total_cost, estimated_duration, status) 
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending')`,
+              service_description, urgency_level, total_cost, estimated_duration, status, payment_status) 
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending_payment', 'unpaid')`,
             [req.user.id, provider_id, service_id, booking_date, booking_time, service_address,
              service_description || null, urgency_level || 'medium', total_cost || null, estimated_duration || null]
         );
@@ -115,7 +115,7 @@ router.post('/', authenticate, [
 // Update booking status
 router.put('/:id/status', authenticate, async (req, res) => {
     try {
-        const { status } = req.body;
+        const { status, reason } = req.body;
         const validStatuses = ['pending', 'confirmed', 'in_progress', 'completed', 'cancelled'];
 
         if (!validStatuses.includes(status)) {
@@ -124,7 +124,7 @@ router.put('/:id/status', authenticate, async (req, res) => {
 
         // Check if user has permission
         const [bookings] = await pool.execute(
-            'SELECT user_id, provider_id FROM bookings WHERE booking_id = ?',
+            'SELECT user_id, provider_id, payment_status, payment_id FROM bookings WHERE booking_id = ?',
             [req.params.id]
         );
 
@@ -134,17 +134,64 @@ router.put('/:id/status', authenticate, async (req, res) => {
 
         const booking = bookings[0];
         const canUpdate = (req.user.role === 'user' && booking.user_id === req.user.id) ||
-                         (req.user.role === 'provider' && booking.provider_id === req.user.id);
+                         (req.user.role === 'provider' && booking.provider_id === req.user.id) ||
+                         req.user.role === 'admin';
 
         if (!canUpdate) {
             return res.status(403).json({ message: 'Access denied' });
         }
 
-        // Update booking status
-        await pool.execute(
-            'UPDATE bookings SET status = ? WHERE booking_id = ?',
-            [status, req.params.id]
-        );
+        // Handle provider rejection specifically
+        if (status === 'cancelled' && req.user.role === 'provider') {
+            console.log('Provider cancelling booking', req.params.id, 'Reason:', reason);
+            if (!reason) {
+                return res.status(400).json({ message: 'A rejection reason is required to cancel a booking' });
+            }
+
+            // Begin transaction for refund logic
+            const connection = await pool.getConnection();
+            await connection.beginTransaction();
+
+            try {
+                // Remove from admin revenue if payment was made
+                console.log('Payment ID:', booking.payment_id);
+                if (booking.payment_id) {
+                    console.log('Deleting from admin_revenue...');
+                    await connection.execute(
+                        'DELETE FROM admin_revenue WHERE booking_id = ?',
+                        [req.params.id]
+                    );
+
+                    console.log('Updating payments status...');
+                    // Update payment status to refunded
+                    await connection.execute(
+                        `UPDATE payments SET payment_status = 'refunded' WHERE booking_id = ?`,
+                        [req.params.id]
+                    );
+                }
+
+                console.log('Updating booking status and reason...');
+                await connection.execute(
+                    'UPDATE bookings SET status = ?, rejection_reason = ? WHERE booking_id = ?',
+                    [status, reason, req.params.id]
+                );
+
+                await connection.commit();
+                console.log('Transaction committed successfully');
+            } catch (err) {
+                console.error('Transaction failed:', err);
+                await connection.rollback();
+                throw err;
+            } finally {
+                connection.release();
+            }
+        } else {
+            // Update booking status normally
+            await pool.execute(
+                'UPDATE bookings SET status = ? WHERE booking_id = ?',
+                [status, req.params.id]
+            );
+        }
 
         // Automatically manage provider availability based on job status
         if (status === 'in_progress') {

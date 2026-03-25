@@ -115,6 +115,8 @@
 6. **ratings_reviews** - User feedback
 7. **complaints** - Dispute records
 8. **provider_services** - Many-to-many relationship table
+9. **payments** - Financial transactions for bookings
+10. **admin_revenue** - Platform commission tracking
 
 ### Database Schema Details
 
@@ -184,7 +186,9 @@ CREATE TABLE bookings (
     service_address TEXT NOT NULL,
     service_description TEXT,
     urgency_level ENUM('low', 'medium', 'high', 'emergency') DEFAULT 'medium',
-    status ENUM('pending', 'confirmed', 'in_progress', 'completed', 'cancelled') DEFAULT 'pending',
+    status ENUM('pending', 'pending_payment', 'confirmed', 'in_progress', 'completed', 'cancelled') DEFAULT 'pending',
+    payment_status ENUM('unpaid', 'paid') DEFAULT 'unpaid',
+    payment_id INT NULL,
     total_cost DECIMAL(10, 2),
     estimated_duration INT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -233,9 +237,46 @@ CREATE TABLE complaints (
 );
 ```
 
+#### 6. Payments Table
+```sql
+CREATE TABLE payments (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    booking_id INT NOT NULL,
+    user_id INT NOT NULL,
+    provider_id INT NOT NULL,
+    amount_paid DECIMAL(10,2) NOT NULL,
+    platform_commission DECIMAL(10,2) NOT NULL,
+    provider_earning DECIMAL(10,2) NOT NULL,
+    commission_rate DECIMAL(5,2) DEFAULT 10.00,
+    payment_status ENUM('pending', 'completed', 'failed') DEFAULT 'pending',
+    card_last4 VARCHAR(4),
+    card_type VARCHAR(20),
+    transaction_id VARCHAR(100) UNIQUE,
+    paid_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (booking_id) REFERENCES bookings(booking_id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users(user_id),
+    FOREIGN KEY (provider_id) REFERENCES service_providers(provider_id)
+);
+```
+
+#### 7. Admin Revenue Table
+```sql
+CREATE TABLE admin_revenue (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    payment_id INT NOT NULL,
+    booking_id INT NOT NULL,
+    amount DECIMAL(10,2) NOT NULL,
+    source VARCHAR(100) DEFAULT 'booking_commission',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (payment_id) REFERENCES payments(id),
+    FOREIGN KEY (booking_id) REFERENCES bookings(booking_id)
+);
+```
+
 ### Relationships
-- **One-to-Many**: User → Bookings, Provider → Bookings
-- **One-to-Many**: Booking → Reviews, Booking → Complaints
+- **One-to-Many**: User → Bookings, Provider → Bookings, User → Payments
+- **One-to-Many**: Booking → Reviews, Booking → Complaints, Booking → Payments
+- **One-to-One**: Payment → Admin Revenue
 - **Many-to-Many**: Providers ↔ Services (via provider_services table)
 
 ---
@@ -416,10 +457,11 @@ PUT /api/bookings/:id/status
 Headers: Authorization: Bearer {token}
 Body: { "status": "confirmed" }
 ```
-**Status Flow**: `pending → confirmed → in_progress → completed`
+**Status Flow**: `pending → payment_processed → confirmed → in_progress → completed / cancelled`
 **Automatic Actions**:
+- Payment processing securely finalizes the booking record in the database upon successful transaction.
 - Status 'in_progress': Sets provider availability to 'busy'
-- Status 'completed'/'cancelled': Checks for other active jobs, sets provider to 'available' if none
+- Status 'completed'/'cancelled': Checks for other active jobs, sets provider to 'available' if none. Provider cancellations are explicitly tracked and finalized as 'cancelled' to prevent stale pending jobs.
 
 #### 3. Submit Review
 ```
@@ -586,18 +628,19 @@ function sortProvidersByRelevance(providers) {
 ### 3. Natural Language Processing (NLP) Algorithm
 
 #### Service Type Extraction
-**Algorithm**: Keyword-based matching with fuzzy string matching
+**Algorithm**: Context-aware semantic matching, hard-lock explicit guards, and keyword fuzzy matching
 
 **Data Structure**: 
-- **serviceKeywords**: Object mapping service categories to keyword arrays
-- **misspellingsMap**: Typo correction dictionary
+- **serviceKeywords**: Priority-ordered object mapping service categories to keyword arrays
+- **misspellingsMap**: Typo correction dictionary to resolve common misspellings (e.g., professions, appliances)
 
 **Process**:
-1. Tokenize input message (WordTokenizer)
-2. Stem words (Porter Stemmer)
-3. Check for exact keyword matches
-4. Calculate Jaro-Winkler similarity for fuzzy matching
-5. Return service category with highest confidence score
+1. **Normalization**: Replace common misspellings using word boundaries and the `misspellingsMap`.
+2. **Context-Aware Semantic Matching**: Identify full sentence intents using explicit regex checks (e.g., `hasPaintingContext`, `hasApplianceContext`, `hasACNotWorking`) rather than isolated words.
+3. **Hard-Lock Explicit Guards**: Enforce strict routing for specific named entities (e.g., exact professions like "plumber" or named appliances with problems) to completely prevent category misclassification (e.g., stopping HVAC from stealing Refrigerator jobs).
+4. **Tokenization & Stemming**: Apply `WordTokenizer` and `PorterStemmer`.
+5. **Fuzzy Matching**: Calculate Jaro-Winkler similarity and use first-letter matching to handle severe typos if semantic context isn't triggered.
+6. Return the service category with the highest confidence score, heavily prioritizing semantic context matches over plain keywords.
 
 **Jaro-Winkler Distance**:
 ```javascript

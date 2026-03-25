@@ -161,6 +161,23 @@ const MyBookings = () => {
                   {booking.service_description && <p><strong>Description:</strong> {booking.service_description}</p>}
                   {booking.total_cost && <p><strong>Cost:</strong> {formatCurrency(booking.total_cost)}</p>}
                   <p><strong>Urgency:</strong> {booking.urgency_level}</p>
+                  
+                  {booking.status === 'cancelled' && booking.rejection_reason && (
+                    <div style={{ marginTop: '15px', padding: '12px', backgroundColor: '#fff3cd', borderLeft: '4px solid #ffc107', borderRadius: '4px' }}>
+                      <p style={{ margin: '0 0 8px 0', color: '#856404' }}><strong>Provider Rejection Reason:</strong> {booking.rejection_reason}</p>
+                      
+                      {booking.admin_message && (
+                        <div style={{ marginTop: '10px', padding: '10px', backgroundColor: '#e8f4f8', borderLeft: '4px solid #2196f3', borderRadius: '4px' }}>
+                          <strong style={{ color: '#0c5460' }}>Admin Reply:</strong>
+                          <p style={{ margin: '5px 0 0 0', color: '#0c5460', fontSize: '0.95em' }}>{booking.admin_message}</p>
+                        </div>
+                      )}
+                      
+                      <p style={{ margin: '10px 0 0 0', color: '#d32f2f', fontWeight: 'bold', fontSize: '0.9em' }}>
+                        * Your payment will be refunded in 1 to 2 hours.
+                      </p>
+                    </div>
+                  )}
                 </div>
                 <div className="booking-actions">
                   {booking.status === 'pending' && (

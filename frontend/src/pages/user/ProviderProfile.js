@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import axios from 'axios';
 import { formatCurrency, formatCurrencyShort } from '../../utils/currency';
+import PaymentModal from '../../components/PaymentModal';
 import '../Dashboard.css';
 
 const ProviderProfile = () => {
@@ -21,6 +22,10 @@ const ProviderProfile = () => {
   const [selectedService, setSelectedService] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  
+  // Payment Modal State
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+  const [pendingBooking, setPendingBooking] = useState(null);
 
   const fetchProviderDetails = useCallback(async () => {
     try {
@@ -118,12 +123,25 @@ const ProviderProfile = () => {
       });
 
       console.log('Booking created successfully:', response.data.booking);
-      alert('Booking created successfully!');
-      navigate('/user/bookings');
+      
+      // Open Payment Modal instead of navigating
+      setPendingBooking({
+          ...response.data.booking,
+          provider_name: provider.business_name || `${provider.first_name} ${provider.last_name}`,
+          hourly_rate: provider.hourly_rate
+      });
+      setIsPaymentModalOpen(true);
+
     } catch (error) {
       console.error('Booking error:', error);
       setError(error.response?.data?.message || 'Failed to create booking');
     }
+  };
+
+  const handlePaymentSuccess = (paymentDetails) => {
+      setIsPaymentModalOpen(false);
+      alert(`Payment successful! Transaction ID: ${paymentDetails.transaction_id}\nBooking confirmed!`);
+      navigate('/user/bookings');
   };
 
   if (loading) return <div className="container">Loading...</div>;
@@ -259,6 +277,13 @@ const ProviderProfile = () => {
           </div>
         </div>
       </div>
+      
+      <PaymentModal 
+        isOpen={isPaymentModalOpen}
+        booking={pendingBooking}
+        onClose={() => setIsPaymentModalOpen(false)}
+        onSuccess={handlePaymentSuccess}
+      />
     </div>
   );
 };

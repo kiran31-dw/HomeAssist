@@ -77,6 +77,37 @@ router.get('/bookings', authenticate, isAdmin, async (req, res) => {
     }
 });
 
+// Update booking admin message
+router.put('/bookings/:id/message', authenticate, isAdmin, async (req, res) => {
+    try {
+        const { admin_message } = req.body;
+
+        if (!admin_message) {
+            return res.status(400).json({ message: 'Admin message is required' });
+        }
+
+        // Check if booking exists
+        const [bookings] = await pool.execute(
+            'SELECT booking_id FROM bookings WHERE booking_id = ?',
+            [req.params.id]
+        );
+
+        if (bookings.length === 0) {
+            return res.status(404).json({ message: 'Booking not found' });
+        }
+
+        await pool.execute(
+            'UPDATE bookings SET admin_message = ? WHERE booking_id = ?',
+            [admin_message, req.params.id]
+        );
+
+        res.json({ message: 'Admin message added successfully' });
+    } catch (error) {
+        console.error('Update admin message error:', error);
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+});
+
 // Get all complaints
 router.get('/complaints', authenticate, isAdmin, async (req, res) => {
     try {
@@ -214,6 +245,64 @@ router.post('/services', authenticate, isAdmin, async (req, res) => {
         res.status(201).json({ message: 'Service created successfully', service_id: result.insertId });
     } catch (error) {
         console.error('Create service error:', error);
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+});
+
+// Get admin revenue
+router.get('/revenue', authenticate, isAdmin, async (req, res) => {
+    try {
+        // Total platform revenue
+        const [totalRevenue] = await pool.execute('SELECT SUM(amount) as total FROM admin_revenue');
+        
+        // Total paid bookings
+        const [totalPaidBookings] = await pool.execute(`SELECT COUNT(*) as count FROM bookings WHERE payment_status = 'paid'`);
+
+        // Average commission
+        const [avgCommission] = await pool.execute('SELECT AVG(amount) as average FROM admin_revenue');
+
+        // Recent transactions: paid + cancelled bookings
+        const [recentTransactions] = await pool.execute(
+            `(SELECT p.transaction_id, p.amount_paid, p.platform_commission, p.created_at as paid_at,
+                    u.first_name as user_first_name, u.last_name as user_last_name,
+                    sp.first_name as provider_first_name, sp.last_name as provider_last_name, sp.business_name as provider_business_name,
+                    s.service_name, 'paid' as txn_status, b.rejection_reason
+             FROM payments p
+             JOIN users u ON p.user_id = u.user_id
+             JOIN service_providers sp ON p.provider_id = sp.provider_id
+             JOIN bookings b ON p.booking_id = b.booking_id
+             JOIN services s ON b.service_id = s.service_id)
+            UNION ALL
+            (SELECT NULL as transaction_id, b.total_cost as amount_paid, NULL as platform_commission, b.updated_at as paid_at,
+                    u.first_name as user_first_name, u.last_name as user_last_name,
+                    sp.first_name as provider_first_name, sp.last_name as provider_last_name, sp.business_name as provider_business_name,
+                    s.service_name, 'cancelled' as txn_status, b.rejection_reason
+             FROM bookings b
+             JOIN users u ON b.user_id = u.user_id
+             JOIN service_providers sp ON b.provider_id = sp.provider_id
+             JOIN services s ON b.service_id = s.service_id
+             WHERE b.status = 'cancelled')
+            ORDER BY paid_at DESC LIMIT 20`
+        );
+
+        // Monthly revenue
+        const [monthlyRevenue] = await pool.execute(
+            `SELECT DATE_FORMAT(created_at, '%Y-%m') as month, SUM(amount) as total
+             FROM admin_revenue
+             GROUP BY month
+             ORDER BY month DESC LIMIT 12`
+        );
+
+        res.json({
+            total_revenue: totalRevenue[0].total || 0,
+            total_paid_bookings: totalPaidBookings[0].count || 0,
+            average_commission: avgCommission[0].average || 0,
+            recent_transactions: recentTransactions,
+            monthly_revenue: monthlyRevenue
+        });
+
+    } catch (error) {
+        console.error('Get revenue error:', error);
         res.status(500).json({ message: 'Server error', error: error.message });
     }
 });

@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
 import { formatCurrencyShort } from '../utils/currency';
+import PaymentModal from './PaymentModal';
 import './Chatbot.css';
 
 const Chatbot = () => {
@@ -11,6 +12,10 @@ const Chatbot = () => {
   const [loading, setLoading] = useState(false);
   const [suggestions, setSuggestions] = useState(null);
   const messagesEndRef = useRef(null);
+  
+  // Payment Modal State
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+  const [pendingBooking, setPendingBooking] = useState(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -99,11 +104,18 @@ const Chatbot = () => {
         total_cost: suggestions.service?.base_price || null
       });
 
-      setMessages(prev => [...prev, { 
-        type: 'bot', 
-        text: `Great! Your booking has been created successfully. Booking ID: ${response.data.booking.booking_id}` 
-      }]);
+      const provider = suggestions.suggestedProviders.find(p => p.provider_id === providerId);
+      const computedRate = provider?.hourly_rate || suggestions.service?.base_price || null;
+
+      setPendingBooking({
+          ...response.data.booking,
+          provider_name: provider?.business_name || `${provider?.first_name} ${provider?.last_name}`,
+          hourly_rate: computedRate,
+          total_cost: computedRate
+      });
+      setIsPaymentModalOpen(true);
       setSuggestions(null);
+
     } catch (error) {
       const errorMessage = error.response?.data?.message || 'Sorry, there was an error creating your booking. Please try again.';
       setMessages(prev => [...prev, { 
@@ -111,6 +123,14 @@ const Chatbot = () => {
         text: errorMessage
       }]);
     }
+  };
+
+  const handlePaymentSuccess = (paymentDetails) => {
+      setIsPaymentModalOpen(false);
+      setMessages(prev => [...prev, { 
+          type: 'bot', 
+          text: `Great! Your payment has been processed and your booking is confirmed. Transaction ID: ${paymentDetails.transaction_id}` 
+      }]);
   };
 
   return (
@@ -171,6 +191,13 @@ const Chatbot = () => {
           Send
         </button>
       </form>
+
+      <PaymentModal 
+        isOpen={isPaymentModalOpen}
+        booking={pendingBooking}
+        onClose={() => setIsPaymentModalOpen(false)}
+        onSuccess={handlePaymentSuccess}
+      />
     </div>
   );
 };

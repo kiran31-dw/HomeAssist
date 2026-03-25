@@ -10,6 +10,11 @@ const ProviderDashboard = () => {
   const [performance, setPerformance] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('jobs');
+  
+  // Rejection Modal State
+  const [showRejectModal, setShowRejectModal] = useState(false);
+  const [rejectJobId, setRejectJobId] = useState(null);
+  const [rejectionReason, setRejectionReason] = useState('');
 
   useEffect(() => {
     fetchData();
@@ -32,9 +37,12 @@ const ProviderDashboard = () => {
     }
   };
 
-  const handleStatusUpdate = async (jobId, newStatus) => {
+  const handleStatusUpdate = async (jobId, newStatus, reason = null) => {
     try {
-      const response = await axios.put(`/api/bookings/${jobId}/status`, { status: newStatus });
+      const payload = { status: newStatus };
+      if (reason) payload.reason = reason;
+
+      const response = await axios.put(`/api/bookings/${jobId}/status`, payload);
       fetchData();
       
       // Show appropriate message based on status
@@ -42,12 +50,29 @@ const ProviderDashboard = () => {
         alert('Job started! Your availability status has been set to "Busy". You will be unavailable until you complete this job.');
       } else if (newStatus === 'completed') {
         alert('Job completed! Your availability status has been set back to "Available".');
+      } else if (newStatus === 'cancelled') {
+        alert('Booking has been rejected successfully.');
       } else {
         alert('Job status updated successfully');
       }
     } catch (error) {
       alert(error.response?.data?.message || 'Failed to update status');
     }
+  };
+
+  const openRejectModal = (jobId) => {
+    setRejectJobId(jobId);
+    setRejectionReason('');
+    setShowRejectModal(true);
+  };
+
+  const handleRejectSubmit = () => {
+    if (!rejectionReason.trim()) {
+      alert('You must provide a reason for rejecting the booking.');
+      return;
+    }
+    handleStatusUpdate(rejectJobId, 'cancelled', rejectionReason);
+    setShowRejectModal(false);
   };
 
   const handleProfileUpdate = async (e) => {
@@ -129,10 +154,11 @@ const ProviderDashboard = () => {
                             Accept
                           </button>
                           <button
-                            onClick={() => handleStatusUpdate(job.booking_id, 'cancelled')}
+                            onClick={() => openRejectModal(job.booking_id)}
                             className="btn btn-danger"
+                            style={{ marginLeft: '10px' }}
                           >
-                            Decline
+                            Reject
                           </button>
                         </>
                       )}
@@ -268,6 +294,33 @@ const ProviderDashboard = () => {
           </div>
         )}
       </div>
+
+      {showRejectModal && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
+          backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000
+        }}>
+          <div style={{
+            background: 'white', padding: '24px', borderRadius: '8px', width: '90%', maxWidth: '400px'
+          }}>
+            <h3 style={{ marginTop: 0 }}>Reject Booking</h3>
+            <div className="form-group">
+              <label>Reason for Rejection</label>
+              <textarea 
+                value={rejectionReason}
+                onChange={(e) => setRejectionReason(e.target.value)}
+                placeholder="E.g., Missing parts, Time conflict..."
+                rows="4"
+                style={{ width: '100%', padding: '10px', marginTop: '8px', boxSizing: 'border-box' }}
+              />
+            </div>
+            <div style={{ display: 'flex', gap: '10px', marginTop: '16px' }}>
+              <button className="btn btn-danger" onClick={handleRejectSubmit}>Submit Rejection</button>
+              <button className="btn btn-secondary" onClick={() => setShowRejectModal(false)}>Cancel</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

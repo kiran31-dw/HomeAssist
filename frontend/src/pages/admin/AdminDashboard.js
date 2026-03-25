@@ -13,6 +13,8 @@ const AdminDashboard = () => {
   const [users, setUsers] = useState([]);
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
+  
+  const [adminMessageForm, setAdminMessageForm] = useState({ bookingId: null, message: '' });
 
   useEffect(() => {
     fetchOverview();
@@ -38,6 +40,9 @@ const AdminDashboard = () => {
       } else if (activeTab === 'services') {
         const response = await axios.get('/api/admin/services');
         setServices(response.data.services);
+      } else if (activeTab === 'revenue') {
+        const response = await axios.get('/api/admin/revenue');
+        setAnalytics(prev => ({ ...prev, revenueData: response.data }));
       }
       setLoading(false);
     } catch (error) {
@@ -84,6 +89,25 @@ const AdminDashboard = () => {
     }
   };
 
+  const handleAdminMessageSubmit = async (e, bookingId) => {
+    e.preventDefault();
+    if (!adminMessageForm.message.trim()) {
+      alert('Please enter an apology or response message.');
+      return;
+    }
+    
+    try {
+      await axios.put(`/api/admin/bookings/${bookingId}/message`, {
+        admin_message: adminMessageForm.message.trim()
+      });
+      alert('Message sent to user successfully');
+      setAdminMessageForm({ bookingId: null, message: '' });
+      fetchOverview(); // Refresh bookings
+    } catch (error) {
+      alert(error.response?.data?.message || 'Failed to send message');
+    }
+  };
+
   return (
     <div className="dashboard">
       <div className="container">
@@ -107,6 +131,9 @@ const AdminDashboard = () => {
           </button>
           <button className={activeTab === 'services' ? 'active' : ''} onClick={() => setActiveTab('services')}>
             Services
+          </button>
+          <button className={activeTab === 'revenue' ? 'active' : ''} onClick={() => setActiveTab('revenue')}>
+            Revenue
           </button>
         </div>
 
@@ -207,6 +234,45 @@ const AdminDashboard = () => {
                       <p><strong>Provider:</strong> {booking.provider_first_name} {booking.provider_last_name}</p>
                       <p><strong>Date:</strong> {new Date(booking.booking_date).toLocaleDateString()}</p>
                       <p><strong>Status:</strong> <span className={`status status-${booking.status}`}>{booking.status}</span></p>
+                      
+                      {booking.status === 'cancelled' && (
+                        <div style={{ marginTop: '15px', padding: '10px', backgroundColor: '#f8f9fa', borderRadius: '4px', border: '1px solid #ddd' }}>
+                          <p><strong>Provider Rejection Reason:</strong> {booking.rejection_reason || 'No reason provided'}</p>
+                          
+                          {booking.admin_message ? (
+                            <div style={{ marginTop: '10px', padding: '10px', backgroundColor: '#e8f4f8', borderLeft: '4px solid #2196f3', borderRadius: '4px' }}>
+                              <strong style={{ color: '#0c5460' }}>Your Response Sent:</strong>
+                              <p style={{ margin: '5px 0 0 0', color: '#0c5460', fontSize: '0.95em' }}>{booking.admin_message}</p>
+                            </div>
+                          ) : (
+                            <div style={{ marginTop: '10px' }}>
+                              {adminMessageForm.bookingId === booking.booking_id ? (
+                                <form onSubmit={(e) => handleAdminMessageSubmit(e, booking.booking_id)}>
+                                  <textarea
+                                    value={adminMessageForm.message}
+                                    onChange={(e) => setAdminMessageForm({ ...adminMessageForm, message: e.target.value })}
+                                    placeholder="Type an apology or explanation to the user..."
+                                    rows="3"
+                                    style={{ width: '100%', padding: '8px', marginBottom: '8px', boxSizing: 'border-box' }}
+                                  />
+                                  <div style={{ display: 'flex', gap: '8px' }}>
+                                    <button type="submit" className="btn btn-primary btn-sm">Send User Message</button>
+                                    <button type="button" className="btn btn-secondary btn-sm" onClick={() => setAdminMessageForm({ bookingId: null, message: '' })}>Cancel</button>
+                                  </div>
+                                </form>
+                              ) : (
+                                <button
+                                  onClick={() => setAdminMessageForm({ bookingId: booking.booking_id, message: '' })}
+                                  className="btn btn-sm"
+                                  style={{ backgroundColor: '#2196f3', color: 'white' }}
+                                >
+                                  ✉️ Send Apology Message
+                                </button>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -404,6 +470,79 @@ const AdminDashboard = () => {
                       <strong>{service.service_name}</strong> - {service.service_category} - {formatCurrencyShort(service.base_price)}
                     </div>
                   ))}
+                </div>
+              </div>
+            )}
+
+            {activeTab === 'revenue' && analytics?.revenueData && (
+              <div className="dashboard-card">
+                <h2>Revenue Dashboard</h2>
+                <div className="dashboard-grid">
+                  <div className="stat-card">
+                    <h3>Total Platform Revenue</h3>
+                    <p className="stat-value">{formatCurrency(analytics.revenueData.total_revenue)}</p>
+                  </div>
+                  <div className="stat-card">
+                    <h3>Total Paid Bookings</h3>
+                    <p className="stat-value">{analytics.revenueData.total_paid_bookings}</p>
+                  </div>
+                  <div className="stat-card">
+                    <h3>Average Commission</h3>
+                    <p className="stat-value">{formatCurrency(analytics.revenueData.average_commission)}</p>
+                  </div>
+                </div>
+
+                <div className="dashboard-card" style={{ marginTop: '20px' }}>
+                  <h3>Recent Transactions (Last 20)</h3>
+                  <div className="table-container">
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>Date</th>
+                          <th>Transaction ID</th>
+                          <th>User</th>
+                          <th>Provider</th>
+                          <th>Service</th>
+                          <th>Amount Paid</th>
+                          <th>Commission</th>
+                          <th>Status</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {analytics.revenueData.recent_transactions.map((txn, idx) => (
+                          <tr key={idx} style={txn.txn_status === 'cancelled' ? { backgroundColor: '#fff5f5' } : {}}>
+                            <td>{new Date(txn.paid_at).toLocaleDateString()}</td>
+                            <td style={{ fontSize: '0.85em' }}>
+                              {txn.txn_status === 'cancelled'
+                                ? <span style={{ color: '#bbb' }}>N/A</span>
+                                : txn.transaction_id}
+                            </td>
+                            <td>{txn.user_first_name} {txn.user_last_name}</td>
+                            <td>{txn.provider_business_name || `${txn.provider_first_name} ${txn.provider_last_name}`}</td>
+                            <td>{txn.service_name}</td>
+                            <td>{txn.amount_paid ? formatCurrencyShort(txn.amount_paid) : <span style={{ color: '#bbb' }}>—</span>}</td>
+                            <td>
+                              {txn.txn_status === 'paid'
+                                ? <span style={{ color: 'green', fontWeight: 'bold' }}>+{formatCurrencyShort(txn.platform_commission)}</span>
+                                : <span style={{ color: '#bbb' }}>—</span>}
+                            </td>
+                            <td>
+                              {txn.txn_status === 'paid' ? (
+                                <span style={{ background: '#e8f5e9', color: '#2e7d32', padding: '2px 8px', borderRadius: '12px', fontSize: '0.8em', fontWeight: 'bold' }}>✓ Paid</span>
+                              ) : (
+                                <>
+                                  <span style={{ background: '#ffebee', color: '#c62828', padding: '2px 8px', borderRadius: '12px', fontSize: '0.8em', fontWeight: 'bold' }}>✕ Cancelled</span>
+                                  {txn.rejection_reason && (
+                                    <div style={{ fontSize: '0.75em', color: '#999', marginTop: '3px' }}>Reason: {txn.rejection_reason}</div>
+                                  )}
+                                </>
+                              )}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               </div>
             )}

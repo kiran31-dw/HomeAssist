@@ -40,7 +40,7 @@ This document provides a structured guide for presenting your AI HomeAssist proj
 ## 3. Database Design (3-4 minutes)
 
 ### What to Say:
-"I designed a normalized relational database with 8 core tables and proper foreign key relationships."
+"I designed a normalized relational database with 10 core tables and proper foreign key relationships."
 
 ### Key Tables:
 1. **users** - Homeowner accounts with location data (latitude/longitude)
@@ -51,6 +51,8 @@ This document provides a structured guide for presenting your AI HomeAssist proj
 6. **services** - Service catalog
 7. **provider_services** - Many-to-many relationship
 8. **admin** - Administrative accounts
+9. **payments** - Financial transactions for bookings
+10. **admin_revenue** - Platform commission tracking
 
 ### Technical Highlights:
 - **Foreign Keys**: Cascading deletes for data integrity
@@ -123,17 +125,17 @@ This document provides a structured guide for presenting your AI HomeAssist proj
 ---
 
 ### Algorithm 3: Natural Language Processing (NLP)
-**What to Say**: "I implemented an NLP pipeline using the Natural.js library to extract service requirements from user messages."
+**What to Say**: "I implemented an advanced NLP pipeline combining Regex for semantic intent and the Natural.js library for fuzzy matching to extract service requirements perfectly."
 
 **Technical Details**:
-- **Library**: Natural.js (WordTokenizer, Porter Stemmer)
+- **Library**: Custom Regex patterns + Natural.js (WordTokenizer, Porter Stemmer)
 - **Process**:
-  1. Tokenization
-  2. Stemming
-  3. Misspelling correction
-  4. Keyword matching
-  5. Jaro-Winkler similarity (fuzzy matching, threshold: 0.7)
-- **Features**: Service type extraction, urgency detection, date/time parsing
+  1. Misspelling dictionary normalization
+  2. Semantic Context-Aware Matching (full sentence intent)
+  3. Hard-Lock Explicit Guards (strict specific terms)
+  4. Tokenization & Stemming
+  5. Jaro-Winkler similarity (fuzzy string matching)
+- **Features**: Highly accurate service category mapping, urgency detection, date/time parsing
 
 **Show**: Code snippet from `backend/utils/aiChatbot.js`
 
@@ -188,10 +190,10 @@ This document provides a structured guide for presenting your AI HomeAssist proj
 
 ### Technical Implementation:
 1. **NLP Pipeline**:
-   - Tokenization (WordTokenizer)
-   - Stemming (Porter Stemmer)
-   - Misspelling correction (custom dictionary)
-   - Keyword matching (service categories)
+   - Misspelling correction (custom dictionary replacement)
+   - Semantic context-aware intent extraction (Regex)
+   - Hard-lock explicit routing for exact matches
+   - Tokenization & Stemming (Natural.js)
    - Fuzzy matching (Jaro-Winkler distance)
 
 2. **Service Type Extraction**:
@@ -384,7 +386,7 @@ This document provides a structured guide for presenting your AI HomeAssist proj
 **A**: "The 3-tier architecture allows horizontal scaling. The stateless API design (JWT tokens) enables load balancing. Database connection pooling handles concurrent requests. The system can be containerized with Docker for easy deployment."
 
 **Q: What was the biggest challenge?**
-**A**: "Implementing the NLP chatbot was challenging. I had to handle various user inputs, typos, and extract service requirements accurately. I solved this by creating a comprehensive keyword dictionary and using fuzzy matching algorithms."
+**A**: "Implementing the NLP chatbot accurately was challenging due to overlapping terminology (like distinguishing basic keywords between HVAC and Appliance). I solved this by implementing semantic context-aware matching, hard-lock explicit guards, and a robust misspelling dictionary alongside fuzzy matching algorithms."
 
 **Q: How do you calculate distances?**
 **A**: "I use the Haversine formula, which calculates great-circle distances between two geographic coordinates. It's accurate for distances up to 1000km and has O(1) time complexity."

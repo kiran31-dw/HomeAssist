@@ -20,6 +20,18 @@ const misspellingsMap = {
     'elektrisian': 'electrician',
     'elektrisity': 'electricity',
     'elektricity': 'electricity',
+    'switchbord': 'switchboard',
+    'switchboad': 'switchboard',
+    'swtichboard': 'switchboard',
+    'swichboard': 'switchboard',
+    'meterboard': 'meter board',
+    'meter bord': 'meter board',
+    'metorboard': 'meter board',
+    'mcbs': 'mcb',
+    'shortsircuit': 'short circuit',
+    'shortcircuit': 'short circuit',
+    'erthing': 'earthing',
+    'earthig': 'earthing',
     // Plumbing misspellings
     'plumer': 'plumber',
     'plumbur': 'plumber',
@@ -63,7 +75,7 @@ const serviceKeywords = {
         'appliance', 'refrigerator', 'washer', 'dryer', 'dishwasher', 'oven', 'stove', 'microwave',
         'washing machine', 'wash machine', 'washingmachine', 'fridge', 'freezer', 'mixer', 'grinder',
         'blender', 'juicer', 'toaster', 'kettle', 'iron', 'vacuum cleaner', 'vacuum', 'tv', 'television',
-        'radio', 'speaker', 'fan', 'table fan', 'geyser', 'water heater', 'heater', 'induction', 'induction stove',
+        'radio', 'speaker', 'table fan', 'geyser', 'water heater', 'heater', 'induction', 'induction stove',
         'gas stove', 'chimney', 'exhaust', 'chimney exhaust', 'water purifier', 'purifier',
         'appliance repair', 'appliance service', 'refrigerator repair', 'washer repair', 'dryer repair',
         'dishwasher repair', 'oven repair', 'stove repair', 'microwave repair', 'fridge repair',
@@ -92,7 +104,7 @@ const serviceKeywords = {
         'sweep', 'sweeping', 'wash', 'washing', 'tidy', 'tidy up', 'organize', 'organization'
     ],
     'Electrical': [
-        'electrician', 'electrical', 'electric', 'wiring', 'outlet', 'circuit', 'light', 'power', 
+        'electrician', 'electrical', 'electric', 'wiring', 'outlet', 'circuit', 'light', 'power',
         'fuse', 'breaker', 'electricity', 'electrical work', 'electrical service', 'electrical repair',
         'electrical wiring', 'new electrical wiring', 'install wiring', 'install electrical wiring',
         'wiring installation', 'electrical wiring installation', 'new wiring', 'house wiring',
@@ -102,7 +114,64 @@ const serviceKeywords = {
         'power issue', 'power problem', 'light issue', 'light problem', 'wiring work', 'wiring repair',
         'install light', 'fix light', 'broken light', 'no power', 'power cut', 'electricity cut',
         'fuse blown', 'circuit breaker', 'electrical safety', 'electrical inspection', 'electrical installation',
-        'install electrical', 'electrical connection', 'power connection', 'electric connection'
+        'install electrical', 'electrical connection', 'power connection', 'electric connection',
+        // Switchboard / meter board / panel
+        'switchboard', 'switch board', 'switchboard repair', 'switchboard problem', 'switchboard issue',
+        'switchboard not working', 'fix switchboard', 'repair switchboard', 'install switchboard',
+        'switchboard burning', 'burning switchboard', 'switchboard spark', 'switchboard smell',
+        'meter board', 'meterboard', 'meter box', 'meter panel', 'meter board repair',
+        'meter board problem', 'meter board issue', 'fix meter board', 'repair meter board',
+        'distribution board', 'db board', 'db box', 'panel board', 'electrical panel',
+        'main panel', 'fuse box', 'fuse board', 'main board', 'main switch',
+        // MCB / RCCB / ELCB
+        'mcb', 'rccb', 'elcb', 'mcb tripping', 'mcb not working', 'mcb blown', 'mcb repair',
+        'circuit breaker tripping', 'breaker tripping', 'breaker blown', 'tripping',
+        // Socket / plug / switch
+        'socket', 'plug', 'plug point', 'power socket', 'electrical socket', 'electric socket',
+        'socket repair', 'socket not working', 'socket issue', 'socket problem',
+        'switch', 'light switch', 'wall switch', 'switch repair', 'switch not working',
+        'switch issue', 'switch problem', 'fix switch', 'repair switch', 'install switch',
+        // Earthing / grounding
+        'earthing', 'grounding', 'earth wire', 'earthing problem', 'earthing issue',
+        'earthing repair', 'earthing installation', 'no earthing',
+        // Short circuit / spark / shock / burning
+        'short circuit', 'short-circuit', 'spark', 'sparking', 'electric spark', 'wire sparking',
+        'electric shock', 'shock', 'getting shock', 'mild shock', 'current leak', 'current leakage',
+        'burning smell', 'burning wire', 'burning electric', 'smell of burning', 'wire burning',
+        'smoke from wire', 'smoke from switchboard', 'wire smell', 'burning from switchboard',
+        // Voltage / meter / transformer
+        'voltage', 'voltage problem', 'low voltage', 'high voltage', 'voltage fluctuation',
+        'fluctuation', 'power fluctuation', 'electricity fluctuation',
+        'electric meter', 'energy meter', 'meter reading', 'meter not working',
+        'transformer', 'inverter', 'ups', 'stabilizer', 'voltage stabilizer',
+        // Ceiling fan — install, repair, not rotating, not working
+        'ceiling fan', 'ceiling fans', 'ceiling fan install', 'install ceiling fan', 'new ceiling fan',
+        'ceiling fan installation', 'install a ceiling fan', 'fit ceiling fan', 'ceiling fan fitting',
+        'ceiling fan repair', 'fix ceiling fan', 'repair ceiling fan', 'ceiling fan not working',
+        'ceiling fan not rotating', 'ceiling fan not spinning', 'ceiling fan slow', 'ceiling fan speed',
+        'ceiling fan stopped', 'ceiling fan problem', 'ceiling fan issue', 'ceiling fan broken',
+        'ceiling fan noise', 'ceiling fan making noise', 'ceiling fan wobbly', 'ceiling fan shaking',
+        'ceiling fan replacement', 'replace ceiling fan', 'ceiling fan wiring', 'ceiling fan connection',
+        'ceiling fan regulator', 'ceiling fan remote', 'ceiling fan capacitor',
+        // Ceiling light
+        'ceiling light', 'ceiling lights', 'ceiling lamp', 'ceiling lighting', 'ceiling light install',
+        'install ceiling light', 'ceiling light repair', 'fix ceiling light', 'ceiling light not working',
+        'ceiling light fitting', 'ceiling light fixture', 'ceiling light replacement',
+        'ceiling light broken', 'ceiling light issue', 'ceiling light problem',
+        'ceiling led', 'ceiling led light', 'ceiling tube light', 'ceiling bulb',
+        // LED / fan wiring / other fixtures
+        'led', 'led light', 'led strip', 'tube light', 'bulb', 'light bulb', 'cfl',
+        'fan wiring', 'light fixture', 'light fitting', 'chandelier',
+        'exhaust fan wiring', 'exhaust fan installation',
+        // Extension / cable
+        'extension board', 'extension cord', 'power strip', 'cable', 'wire', 'electric wire',
+        'wire installation', 'cable installation', 'cable repair',
+        // General electrical actions
+        'electrical work', 'electric work', 'electrical job', 'wiring work', 'wiring done',
+        'point wiring', 'new point', 'add point', 'extra point', 'electrical point',
+        'need electrical', 'want electrical', 'book electrical', 'arrange electrical',
+        'no electricity', 'electricity gone', 'no light', 'lights not working',
+        'power not coming', 'power gone', 'tripped', 'trip'
     ],
     'Plumbing': [
         'plumber', 'plumbing', 'pipe', 'leak', 'drain', 'faucet', 'toilet', 'sink', 'sewer', 
@@ -139,7 +208,7 @@ const serviceKeywords = {
         'color change', 'colour change', 'fresh paint', 'new paint', 'wall paint', 'house paint',
         'painting work', 'painting service', 'need painter', 'want painter', 'wall painting',
         'house painting', 'home painting', 'room painting', 'exterior painting', 'interior painting',
-        'paint walls', 'paint ceiling', 'paint exterior', 'paint interior', 'brush', 'brush work'
+        'paint walls', 'paint ceiling', 'paint exterior', 'paint interior', 'brush', 'brush work', 'painting service'
     ],
     'Carpentry': [
         'carpenter', 'carpentry', 'wood', 'cabinet', 'furniture', 'door', 'window', 'frame', 'shelf',
@@ -164,13 +233,22 @@ const serviceKeywords = {
         'furniture installation', 'kitchen cabinet installation'
     ],
     'HVAC': [
-        'hvac', 'heating', 'cooling', 'air conditioning', 'ac', 'furnace', 'thermostat', 'ventilation',
-        'hvac service', 'hvac repair', 'ac service', 'ac repair', 'air conditioner', 'air conditioning',
-        'need ac', 'want ac', 'ac issue', 'ac problem', 'heating issue', 'cooling issue',
-        'air conditioning issue', 'ac not working', 'heating not working', 'cooling not working',
-        'fix ac', 'fix heating', 'fix cooling', 'install ac', 'install heating', 'install cooling',
-        'ac maintenance', 'heating maintenance', 'cooling maintenance', 'thermostat repair',
-        'furnace repair', 'ventilation repair', 'air quality', 'temperature control'
+        'hvac', 'heating', 'cooling', 'air conditioning', 'ac', 'aircon', 'air conditioner',
+        'furnace', 'thermostat', 'ventilation', 'vent', 'duct', 'ductwork',
+        'hvac service', 'hvac repair', 'ac service', 'ac repair', 'ac not cooling',
+        'ac not working', 'ac problem', 'ac issue', 'ac fault', 'ac gas',
+        'air conditioning service', 'air conditioning repair', 'air conditioning issue',
+        'need ac', 'want ac', 'book ac', 'ac technician', 'ac mechanic', 'ac engineer',
+        'heating issue', 'cooling issue', 'heating problem', 'cooling problem',
+        'not cooling', 'not heating', 'no cold air', 'warm air from ac',
+        'ac is warm', 'ac giving warm', 'ac blowing warm', 'ac blowing hot',
+        'ac not cold', 'aircon not working', 'aircon problem', 'aircon repair',
+        'fix ac', 'fix heating', 'fix cooling', 'repair ac', 'repair air conditioner',
+        'install ac', 'install heating', 'install cooling', 'ac installation',
+        'ac maintenance', 'heating maintenance', 'cooling maintenance',
+        'thermostat repair', 'furnace repair', 'ventilation repair',
+        'air quality', 'temperature control', 'ac gas refill', 'ac recharge',
+        'ac leaking', 'ac dripping', 'ac making noise', 'ac noisy', 'ac tripping'
     ],
     'General': [
         'handyman', 'repair', 'fix', 'maintenance', 'general', 'help', 'handyman service',
@@ -278,14 +356,48 @@ function extractServiceType(message) {
         lowerMessage.match(/\b(pipe|tap|faucet)\s+(burst|broken|installation|repair)\b/i);
     
     // Check for appliance-related context (e.g., "washing machine not working", "my fridge", "broken tv", "heater repair")
-    const applianceNames = 'washing machine|fridge|refrigerator|mixer|grinder|tv|television|radio|fan|geyser|microwave|oven|stove|washer|dryer|dishwasher|freezer|blender|juicer|toaster|kettle|iron|vacuum|speaker|heater|purifier|water heater|room heater|space heater|vacuum cleaner';
+    const applianceNames = 'washing machine|fridge|refrigerator|mixer|grinder|tv|television|radio|table fan|geyser|microwave|oven|stove|washer|dryer|dishwasher|freezer|blender|juicer|toaster|kettle|iron|vacuum|speaker|heater|purifier|water heater|room heater|space heater|vacuum cleaner|induction|gas stove|chimney|water purifier|air cooler|chimney exhaust';
     const hasApplianceContext = lowerMessage.match(new RegExp(`\\b(my|the|a|an)\\s+(${applianceNames})\\b`, 'i')) ||
-        lowerMessage.match(new RegExp(`\\b(${applianceNames})\\s+(is|not|not working|broken|damaged|issue|problem)\\b`, 'i')) ||
-        lowerMessage.match(new RegExp(`\\b(broken|damaged|not working|fix|repair)\\s+(${applianceNames})\\b`, 'i')) ||
+        lowerMessage.match(new RegExp(`\\b(${applianceNames})\\s+(is|not|not working|broken|damaged|issue|problem|stopped|not cooling|not heating|not cleaning|not spinning|leaking|making noise|not starting|tripped)\\b`, 'i')) ||
+        lowerMessage.match(new RegExp(`\\b(broken|damaged|not working|fix|repair|service|replace|install)\\s+(${applianceNames})\\b`, 'i')) ||
         lowerMessage.match(/\b(appliance|appliances)\s+(not working|broken|damaged|issue|problem|repair|fix)\b/i) ||
         lowerMessage.match(/\b(heater|water heater|room heater|space heater)\s+(repair|service|fix|not working|broken|issue|problem)\b/i) ||
         lowerMessage.match(/\b(book|need|want|arrange|schedule)\s+(heater|water heater)\s+(repair|service)\b/i) ||
-        lowerMessage.match(/\b(heater|water heater)\s+repair\s+service\b/i);
+        lowerMessage.match(/\b(heater|water heater)\s+repair\s+service\b/i) ||
+        lowerMessage.match(/\b(refrigerator|fridge)\s+(not cooling|not cold|not working|stopped|issue|problem|repair|service|broken|damaged|leaking)\b/i) ||
+        lowerMessage.match(/\b(washing machine|washer)\s+(not working|not spinning|stopped|issue|problem|repair|service|broken|leaking|not draining|vibrating)\b/i) ||
+        lowerMessage.match(/\b(tv|television)\s+(not working|not turning on|blank screen|no picture|no sound|broken|damaged|issue|problem|repair|service)\b/i) ||
+        lowerMessage.match(/\b(microwave|oven|stove|dishwasher|blender|mixer|grinder)\s+(not working|stopped|broken|issue|problem|repair|service|not heating|not cleaning)\b/i);
+    // Hard-lock guard: specific named appliance present + problem/service word present = ALWAYS Appliance
+    // Uses TWO-PART detection: appliance name anywhere + problem word anywhere in sentence
+    // This handles "My TV screen is not turning on", "washing machine drum is vibrating", etc.
+    // where words appear BETWEEN the appliance name and the problem description
+    const applianceProblemWords = /\b(not working|not turning on|not cooling|not cold|not heating|not starting|not spinning|not draining|not displaying|not charging|no picture|no sound|blank screen|black screen|stopped|broken|damaged|leaking|issue|problem|repair|service|fix|replacement|making noise|vibrating|sparking|burning|overheating|not opening|not closing|not switching on|won't turn on|won't start|won't work|need repair|need service|need fix|need to repair|need to fix)\b/i;
+    const applianceNamesList = [
+        'washing machine', 'wash machine', 'fridge', 'refrigerator', 'mixer', 'grinder',
+        'tv', 'television', 'radio', 'table fan', 'geyser', 'microwave', 'oven', 'stove',
+        'washer', 'dryer', 'dishwasher', 'freezer', 'blender', 'juicer', 'toaster',
+        'kettle', 'iron', 'vacuum cleaner', 'vacuum', 'speaker', 'heater', 'purifier',
+        'water heater', 'room heater', 'space heater', 'induction', 'gas stove',
+        'chimney', 'water purifier', 'air cooler', 'chimney exhaust', 'water dispenser',
+        'air fryer', 'food processor', 'sandwich maker', 'coffee maker', 'rice cooker'
+    ];
+    // Check if any appliance name appears in the message
+    const hasApplianceNameInMsg = applianceNamesList.some(name => {
+        const escaped = name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        return new RegExp(`\\b${escaped}\\b`, 'i').test(lowerMessage);
+    });
+    const hasApplianceExplicit =
+        // TWO-PART: appliance name present + problem/service word present (anywhere in sentence)
+        (hasApplianceNameInMsg && applianceProblemWords.test(lowerMessage)) ||
+        // Direct action on appliance: "fix my TV", "repair washing machine", "service my fridge"
+        lowerMessage.match(new RegExp(`\\b(fix|repair|service|replace|install|book)\\s+(a\\s+|my\\s+|the\s+|an\s+|new\s+)?(${applianceNames})\\b`, 'i')) ||
+        // "need/want appliance repair/service"
+        lowerMessage.match(/\b(need|want|book|arrange|schedule|get|i need|i want)\s+(appliance|washing machine|refrigerator|fridge|tv|television|microwave|oven|mixer|grinder|geyser|heater|water heater)\s+(repair|service|fix|technician|engineer|mechanic)\b/i) ||
+        // "my fridge repair", "tv repair", "washing machine service"
+        lowerMessage.match(new RegExp(`\\b(${applianceNames})\\s+.{0,20}(repair|service|fix|not working|broken|issue|problem)\\b`, 'i')) ||
+        // "my TV/fridge/washer" with any problem anywhere
+        (lowerMessage.match(/\b(my|the)\s+(tv|television|fridge|refrigerator|washing machine|microwave|oven|mixer|grinder|geyser|heater|washer|dryer|dishwasher|blender|vacuum)\b/i) && applianceProblemWords.test(lowerMessage));
     
     // Special check: If "painter" is explicitly mentioned, Painting should win
     const hasPainterExplicit = lowerMessage.match(/\b(painter|painters)\b/i);
@@ -302,16 +414,45 @@ function extractServiceType(message) {
     
     // Special check: If "electrician" is explicitly mentioned, Electrical should win
     const hasElectricianExplicit = lowerMessage.match(/\b(electrician|electricians)\b/i);
-    
-    // Special check: If "AC" or "ac" is explicitly mentioned with "not working" or similar, HVAC should win
-    // Handles case variations: "AC", "Ac", "ac", "aC" - all work due to case-insensitive flag (i)
-    const hasACNotWorking = lowerMessage.match(/\b(ac|air conditioner|air conditioning)\s+(is|are)\s+not\s+working\b/i) ||
-        lowerMessage.match(/\b(ac|air conditioner|air conditioning)\s+(is|are)\s+(broken|damaged)\b/i) ||
-        lowerMessage.match(/\b(ac|air conditioner|air conditioning)\s+not\s+working\b/i) ||
-        lowerMessage.match(/\b(ac|air conditioner|air conditioning)\s+(broken|damaged)\b/i) ||
-        lowerMessage.match(/\b(my|the|a|an)\s+(ac|air conditioner|air conditioning)\s+(is|are)\s+not\s+working\b/i) ||
-        lowerMessage.match(/\b(my|the|a|an)\s+(ac|air conditioner|air conditioning)\s+(is|are)\s+(broken|damaged)\b/i) ||
-        lowerMessage.match(/\b(my|the|a|an)\s+(ac|air conditioner|air conditioning)\s+not\s+working\b/i);
+
+    // Special check: If key electrical device/component terms are mentioned, Electrical should win
+    // These are terms that ONLY belong to electrical service (never carpentry/plumbing)
+    const hasElectricalDeviceExplicit =
+        lowerMessage.match(/\b(switchboard|switch board|meter board|meter box|meter panel|distribution board|db board|panel board|fuse box|fuse board|main board|main switch|db box)\b/i) ||
+        lowerMessage.match(/\b(mcb|rccb|elcb)\b/i) ||
+        lowerMessage.match(/\b(short circuit|short-circuit|electric shock|current leak|current leakage|sparking|wire sparking)\b/i) ||
+        lowerMessage.match(/\b(plug point|power socket|electric socket|wall socket|socket)\s*(not working|issue|problem|repair|fix|burnt|burning)?\b/i) ||
+        lowerMessage.match(/\b(voltage fluctuation|power fluctuation|electricity fluctuation|no electricity|no power)\b/i) ||
+        lowerMessage.match(/\b(burning|smoke|smell|spark).{0,30}(switchboard|switch board|meter board|wire|socket|plug|fuse|board)\b/i) ||
+        lowerMessage.match(/\b(switchboard|switch board|meter board|socket|fuse box).{0,30}(burning|smoke|smell|spark|issue|problem|repair|fix|not working)\b/i);
+
+    // Special check: If "hvac", "air conditioner", "air conditioning", "aircon" explicitly mentioned, HVAC wins
+    const hasHVACExplicit = lowerMessage.match(/\bhvac\b/i) ||
+        lowerMessage.match(/\b(air conditioner|air conditioning|aircon|airconditioner)\b/i);
+
+    // Special check: If AC/HVAC issue is mentioned in any form, HVAC should always win
+    // Covers: "my AC is not cooling", "AC not working", "AC is warm", "air conditioner leaking", "AC making noise"
+    const hasACNotWorking =
+        // not working / not functioning
+        lowerMessage.match(/\b(ac|a\.c|air conditioner|air conditioning|aircon|airconditioner)\s+(is\s+)?(not\s+)?(working|functioning|running|starting|turning on|switching on)\b/i) ||
+        // not cooling / not cool
+        lowerMessage.match(/\b(ac|a\.c|air conditioner|air conditioning|aircon)\s+(is\s+|are\s+)?(not\s+)?(cooling|cool|cold|blowing cold|giving cold|giving cool)\b/i) ||
+        lowerMessage.match(/\b(my|the)\s+(ac|a\.c|air conditioner|air conditioning|aircon)\s+(is\s+|are\s+)?(not\s+)?(cooling|cool|cold|blowing cold|giving cold|giving cool)\b/i) ||
+        lowerMessage.match(/\b(ac|a\.c|air conditioner|air conditioning|aircon)\s+(not\s+)(cooling|cool|cold|working|on|blowing)\b/i) ||
+        // warm air from AC
+        lowerMessage.match(/\b(ac|a\.c|air conditioner|air conditioning|aircon)\s+(is\s+)?(giving|blowing|producing)\s+(hot|warm|heat)\b/i) ||
+        lowerMessage.match(/\b(hot|warm)\s+air\s+(from|coming from)\s+(ac|air conditioner|aircon)\b/i) ||
+        // broken / damaged / leaking / noisy
+        lowerMessage.match(/\b(ac|a\.c|air conditioner|air conditioning|aircon)\s+(is\s+)?(broken|damaged|leaking|noisy|making noise|dripping|tripping)\b/i) ||
+        lowerMessage.match(/\b(my|the)\s+(ac|a\.c|air conditioner|air conditioning|aircon)\s+(is\s+)?(broken|damaged|leaking|noisy|making noise|dripping|not working|not cooling)\b/i) ||
+        // generic "AC problem/issue"
+        lowerMessage.match(/\b(ac|a\.c|air conditioner|air conditioning|aircon)\s+(problem|issue|fault|error|trouble)\b/i) ||
+        lowerMessage.match(/\b(problem|issue|fault|trouble)\s+(with|in|of)\s+(my\s+)?(ac|a\.c|air conditioner|air conditioning|aircon)\b/i) ||
+        // no cooling / no cold
+        lowerMessage.match(/\b(no|without)\s+(cooling|cold air|cool air)\s+(from|in)\s+(ac|a\.c|air conditioner|aircon)\b/i) ||
+        // AC service / repair / maintenance
+        lowerMessage.match(/\b(ac|a\.c|air conditioner|air conditioning|aircon)\s+(service|repair|fix|maintenance|check|cleaning|gas|refill|recharge)\b/i) ||
+        lowerMessage.match(/\b(service|repair|fix|clean|refill|recharge)\s+(my\s+)?(ac|a\.c|air conditioner|air conditioning|aircon)\b/i);
     
     // Check for electrical-related context (semantic understanding)
     const hasElectricalContext = lowerMessage.match(/\b(electrician|electrical|electric)\s+(to\s+)?(repair|fix|install|arrange|book|schedule|work|service)\b/i) ||
@@ -320,26 +461,92 @@ function extractServiceType(message) {
         lowerMessage.match(/\b(want|need|book|arrange|schedule|get|send|i want|i need)\s+(to\s+)?(install|install new|new)\s+(electrical\s+)?(wiring|wires|wire)\b/i) ||
         lowerMessage.match(/\b(install|installing)\s+(new\s+)?(electrical\s+)?(wiring|wires|wire)\b/i) ||
         lowerMessage.match(/\b(electrical|electric|power)\s+(issue|problem|work|service|repair|installation|connection|wiring)\b/i) ||
-        lowerMessage.match(/\b(light|lights|outlet|outlets|circuit|circuits|fuse|breaker)\s+(install|installation|repair|fix|issue|problem|not working)\b/i);
+        lowerMessage.match(/\b(light|lights|outlet|outlets|circuit|circuits|fuse|breaker)\s+(install|installation|repair|fix|issue|problem|not working)\b/i) ||
+        // Ceiling fan / ceiling light (electrical installation/repair)
+        lowerMessage.match(/\b(ceiling fan|ceiling light|ceiling lamp|ceiling lighting|ceiling led|ceiling tube)\b/i) ||
+        lowerMessage.match(/\b(install|fit|fix|repair|replace|need|want|book|arrange|get)\s+(a\s+|an\s+|new\s+)?(ceiling fan|ceiling light|ceiling lamp|ceiling fixture)\b/i) ||
+        lowerMessage.match(/\b(ceiling fan|ceiling light)\s+(not working|not rotating|not spinning|slow|stopped|broken|issue|problem|repair|fix|install|installation|wiring|connection)\b/i) ||
+        // Switchboard / meter board / panel
+        lowerMessage.match(/\b(switchboard|switch board|meter board|meter box|meter panel|distribution board|db board|panel board|fuse box|fuse board|main board|main switch|db box)\b/i) ||
+        lowerMessage.match(/\b(switchboard|switch board|meter board)\s+(repair|fix|issue|problem|not working|burning|spark|smell|installation|install)\b/i) ||
+        lowerMessage.match(/\b(burning|smell|smoke|spark|sparking)\s+(from|in|near|at)\s+(the\s+)?(switchboard|switch board|meter board|fuse box|panel|board|wires|wire|plug|socket)\b/i) ||
+        // Smell + electrical device must be CLOSE together (within 40 chars) to avoid matching cleaning sentences
+        (lowerMessage.match(/\b(smell|burning|smoke)\b/i) && lowerMessage.match(/\b(switchboard|switch board|meter board|fuse box|panel board|socket|plug|wire|wiring)\b/i) &&
+            (() => { const s = lowerMessage.indexOf((lowerMessage.match(/\b(smell|burning|smoke)\b/i)||[''])[0]); const e = lowerMessage.indexOf((lowerMessage.match(/\b(switchboard|switch board|meter board|socket|plug|wire)\b/i)||[''])[0]); return s >= 0 && e >= 0 && Math.abs(s-e) < 50; })()) ||
+        // MCB / circuit breaker
+        lowerMessage.match(/\b(mcb|rccb|elcb|circuit breaker|breaker)\s+(tripping|blown|not working|issue|problem|repair|fix)\b/i) ||
+        lowerMessage.match(/\b(tripping|trip)\s+(mcb|circuit breaker|breaker|board|main switch)\b/i) ||
+        // Socket / switch
+        lowerMessage.match(/\b(socket|plug point|plug|power socket|wall socket|electric socket)\s+(not working|issue|problem|repair|fix|install|broken|burnt)\b/i) ||
+        lowerMessage.match(/\b(light switch|wall switch|switch)\s+(not working|issue|problem|repair|fix|install|broken|burnt)\b/i) ||
+        // Shock / short circuit / spark
+        lowerMessage.match(/\b(electric|electrical|getting|mild|got)\s+shock\b/i) ||
+        lowerMessage.match(/\b(short circuit|short-circuit|sparking|wire sparking|current leak|current leakage)\b/i) ||
+        lowerMessage.match(/\b(wire|wires|socket|plug|switchboard|board)\s+(spark|sparking|burning|smoking|melted|damaged)\b/i) ||
+        // Voltage / power issues
+        lowerMessage.match(/\b(voltage|power)\s+(fluctuation|problem|issue|low|high)\b/i) ||
+        lowerMessage.match(/\b(no electricity|no power|no light|electricity gone|power gone|lights not working|power not coming)\b/i) ||
+        // General electrical request
+        lowerMessage.match(/\b(need|want|book|get|arrange|send|schedule|i need|i want)\s+(a\s+|an\s+)?electrician\b/i) ||
+        lowerMessage.match(/\b(need|want)\s+(electrical|electric)\s+(work|service|repair|help)\b/i);
+
+    // Check for ceiling fan / ceiling light context — ALWAYS routes to Electrical
+    // Ceiling fan installation/repair is an electrical job, not appliance or plumbing
+    const hasCeilingFanContext =
+        lowerMessage.match(/\bceiling fan\b/i) ||
+        lowerMessage.match(/\bceiling light\b/i) ||
+        lowerMessage.match(/\bceiling lamp\b/i) ||
+        lowerMessage.match(/\bceiling lighting\b/i) ||
+        lowerMessage.match(/\bceiling led\b/i) ||
+        lowerMessage.match(/\bceiling tube light\b/i) ||
+        lowerMessage.match(/\bceiling fixture\b/i) ||
+        lowerMessage.match(/\b(install|fit|fitting|fix|repair|replace|book|need|want|arrange|get)\s+(a\s+|an\s+|new\s+|my\s+)?(ceiling fan|ceiling light|ceiling lamp|ceiling fixture|ceiling led)\b/i) ||
+        lowerMessage.match(/\b(ceiling fan|ceiling light)\s+(is\s+)?(not working|not rotating|not spinning|not starting|slow|stopped|broken|noisy|making noise|issue|problem|repair|fix|installation|wiring)\b/i) ||
+        lowerMessage.match(/\b(my|the)\s+(ceiling fan|ceiling light)\b/i) ||
+        lowerMessage.match(/\b(want|need|i want|i need)\s+(to\s+)?(install|fit|fix|repair|replace)\s+(a\s+|an\s+|new\s+)?(ceiling|ceiling fan|ceiling light)\b/i);
     
     // Check for cleaning-related context (semantic understanding)
     const hasCleaningContext = lowerMessage.match(/\b(cleaner|cleaning|clean)\s+(to\s+)?(clean|service|help|work|house|home|room|office)\b/i) ||
         lowerMessage.match(/\b(want|need|book|arrange|schedule|get|send|i want|i need)\s+(to\s+)?(clean|cleaning|house cleaning|home cleaning|room cleaning)\b/i) ||
         lowerMessage.match(/\b(house|home|room|office|apartment)\s+(need|want|get|schedule|arrange|book)\s+(cleaning|clean|cleaner)\b/i) ||
         lowerMessage.match(/\b(deep|thorough|complete)\s+clean(ing)?\b/i) ||
-        lowerMessage.match(/\b(dusting|mopping|vacuum|sweep|tidy)\s+(service|work|help)\b/i);
+        lowerMessage.match(/\b(dusting|mopping|vacuum|sweep|tidy)\s+(service|work|help)\b/i) ||
+        // Natural sentences: "clean my house", "need to clean my home", "want someone to clean"
+        lowerMessage.match(/\b(need|want|i need|i want)\s+(to\s+)?(clean|cleaning)\s+(my|the|a|our)\s+(house|home|room|flat|apartment|office|kitchen|bathroom|bedroom)\b/i) ||
+        lowerMessage.match(/\b(clean|cleaning)\s+(my|the|our)\s+(house|home|room|flat|apartment|office|kitchen|bathroom|bedroom)\b/i) ||
+        lowerMessage.match(/\b(house|home|room|flat|apartment|office)\s+(cleaning|clean|need cleaning|needs cleaning|needs to be cleaned)\b/i) ||
+        lowerMessage.match(/\b(hire|book|send|arrange|get|find|schedule)\s+(a\s+)?(cleaner|maid|housekeeper|cleaning service|house cleaner)\b/i) ||
+        lowerMessage.match(/\b(maid|housekeeping|housekeeper|house help|home help)\b/i) ||
+        lowerMessage.match(/\b(need|want|looking for)\s+(a\s+)?(maid|cleaner|housekeeper|cleaning help|cleaning lady|cleaning person)\b/i) ||
+        lowerMessage.match(/\b(regular|weekly|daily|monthly|one-time)\s+(cleaning|clean|maid|housekeeper)\b/i);
+
+    // Strong cleaning explicit checks — for hard-locking to Cleaning service
+    const hasCleaningExplicit = lowerMessage.match(/\b(cleaner|cleaners|maid|maids|housekeeper|housekeeping)\b/i);
+    const hasCleaningStrong =
+        lowerMessage.match(/\b(need|want|i need|i want)\s+(to\s+)?(clean|cleaning)\s+(my|the|a|our)?\s*(house|home|room|flat|apartment|office|kitchen|bathroom|bedroom)\b/i) ||
+        lowerMessage.match(/\b(deep|thorough|complete)\s+clean(ing)?\b/i) ||
+        lowerMessage.match(/\b(clean|cleaning)\s+(my|the|our)\s+(house|home|room|flat|apartment|office|kitchen|bathroom|bedroom)\b/i) ||
+        lowerMessage.match(/\b(hire|book|send|arrange|get|find|schedule)\s+(a\s+)?(cleaner|maid|housekeeper|cleaning service)\b/i) ||
+        lowerMessage.match(/\b(house|home|room|apartment|office)\s+(cleaning|clean|need cleaning|needs cleaning)\b/i) ||
+        lowerMessage.match(/\b(maid|housekeeper|housekeeping|house help)\b/i);
     
-    // Check for HVAC-related context (semantic understanding)
-    const hasHVACContext = lowerMessage.match(/\b(hvac|heating|cooling|air conditioning|ac)\s+(to\s+)?(repair|fix|install|service|maintenance|work)\b/i) ||
-        lowerMessage.match(/\b(install|install new|new|replace|repair|fix)\s+(ac|air conditioner|air conditioning|heating|cooling|hvac)\b/i) ||
-        lowerMessage.match(/\b(ac|air conditioner|air conditioning|heating|cooling|hvac)\s+(install|installation|repair|fix|not working|issue|problem|service)\b/i) ||
-        lowerMessage.match(/\b(ac|air conditioner|air conditioning|heating|cooling|hvac)\s+(is|are)\s+not\s+working\b/i) ||
-        lowerMessage.match(/\b(ac|air conditioner|air conditioning|heating|cooling|hvac)\s+(is|are)\s+(broken|damaged|issue|problem)\b/i) ||
-        lowerMessage.match(/\b(ac|air conditioner|air conditioning|heating|cooling|hvac)\s+not\s+working\b/i) ||
-        lowerMessage.match(/\b(my|the|a|an)\s+(ac|air conditioner|air conditioning|heating|cooling|hvac)\s+(is|are)\s+not\s+working\b/i) ||
-        lowerMessage.match(/\b(my|the|a|an)\s+(ac|air conditioner|air conditioning|heating|cooling|hvac)\s+(is|are)\s+(broken|damaged)\b/i) ||
-        lowerMessage.match(/\b(want|need|book|arrange|schedule|get|send|i want|i need)\s+(to\s+)?(install|repair|fix)\s+(ac|air conditioner|heating|cooling)\b/i) ||
-        lowerMessage.match(/\b(temperature|thermostat|furnace|ventilation)\s+(repair|fix|install|issue|problem|not working)\b/i);
+    // Check for HVAC-related context (semantic understanding) — comprehensive
+    const hasHVACContext =
+        // AC/aircon specific issues (covered comprehensively above)
+        hasACNotWorking ||
+        // HVAC/heating/cooling service/repair
+        lowerMessage.match(/\b(hvac|heating|cooling|air conditioning|ac|a\.c|aircon)\s+(to\s+)?(repair|fix|install|service|maintenance|work|check)\b/i) ||
+        lowerMessage.match(/\b(install|replace|repair|fix|service|clean|recharge|refill)\s+(ac|a\.c|air conditioner|air conditioning|hvac|aircon|heating|cooling|furnace|thermostat)\b/i) ||
+        // HVAC explicitly mentioned
+        lowerMessage.match(/\bhvac\b/i) ||
+        // temperature & comfort issues
+        lowerMessage.match(/\b(room|house|home|office)\s+(is\s+)?(too\s+)?(hot|warm|cold|not cooling|not heating|not comfortable)\b/i) ||
+        lowerMessage.match(/\b(temperature|thermostat|furnace|ventilation|vent|duct|ductwork)\s+(repair|fix|install|issue|problem|not working|service|maintenance)\b/i) ||
+        // general AC need
+        lowerMessage.match(/\b(need|want|book|arrange|schedule|get|send|i need|i want)\s+(a\s+)?(ac|air conditioner|hvac|cooling|heating)\s*(service|repair|technician|mechanic|engineer|person|man|guy|help)?\b/i) ||
+        // "not cooling" / "not heating" shorthand without AC mentioned
+        lowerMessage.match(/\bac\b/i) && lowerMessage.match(/\b(not cooling|not working|not cold|warm|issue|problem|service|repair)\b/i);
+
     
     // Check each category in order (priority order matters)
     for (const [category, keywords] of Object.entries(serviceKeywords)) {
@@ -388,13 +595,62 @@ function extractServiceType(message) {
         // If "electrician" is explicitly mentioned, only Electrical should match (highest priority)
         if (hasElectricianExplicit) {
             if (category === 'Electrical') {
-                score += 50; // Extremely high priority when "electrician" is mentioned
+                score += 50;
             } else {
-                // Skip other categories if "electrician" is mentioned - they shouldn't match
+                continue;
+            }
+        }
+
+        // If a cleaner/maid/housekeeper is explicitly mentioned, only Cleaning should match
+        if (hasCleaningExplicit) {
+            if (category === 'Cleaning') {
+                score += 60; // Hard win — explicit cleaner/maid/housekeeper always = Cleaning
+            } else {
+                continue;
+            }
+        }
+
+        // If a strong cleaning sentence is detected (need to clean my house, deep clean, etc.),
+        // only Cleaning should match — prevents Electrical/Plumbing/General stealing cleaning queries
+        if (hasCleaningStrong) {
+            if (category === 'Cleaning') {
+                score += 60; // Maximum priority for explicit cleaning sentences
+            } else {
+                continue;
+            }
+        }
+
+        // If a strong electrical device term (switchboard, MCB, meter board, etc.) is mentioned,
+        // only Electrical should match (highest priority) — prevents false Carpentry matches
+        if (hasElectricalDeviceExplicit) {
+            if (category === 'Electrical') {
+                score += 60; // Maximum priority for clear electrical device terms
+            } else {
+                continue;
+            }
+        }
+
+        // If ceiling fan or ceiling light is mentioned, only Electrical should match
+        // Ceiling fan install/repair is always an electrical job
+        if (hasCeilingFanContext) {
+            if (category === 'Electrical') {
+                score += 60; // Maximum priority — ceiling fan is always electrical
+            } else {
                 continue;
             }
         }
         
+        // APPLIANCE GUARD: If a specific named appliance is mentioned with an issue/repair,
+        // Appliance MUST win — prevents refrigerator/washing machine being stolen by HVAC ("not cooling") or Electrical
+        // This fires BEFORE hasACNotWorking to handle "refrigerator not cooling" correctly
+        if (hasApplianceExplicit) {
+            if (category === 'Appliance') {
+                score += 70; // Maximum priority — named appliance + problem = always Appliance
+            } else {
+                continue;
+            }
+        }
+
         // If "AC is not working" or similar phrases are mentioned, only HVAC should match (highest priority)
         if (hasACNotWorking) {
             if (category === 'HVAC') {
@@ -404,7 +660,16 @@ function extractServiceType(message) {
                 continue;
             }
         }
-        
+
+        // If "hvac", "air conditioner", "aircon" is explicitly mentioned, only HVAC should match
+        if (hasHVACExplicit && !hasACNotWorking) {
+            if (category === 'HVAC') {
+                score += 60; // Hard win when HVAC/AC explicitly mentioned
+            } else {
+                continue;
+            }
+        }
+
         // SEMANTIC UNDERSTANDING: Boost scores based on sentence meaning (HIGHEST PRIORITY)
         // These context matches understand the full sentence meaning, not just individual keywords
         // Semantic matches get much higher scores than simple keyword matches
@@ -572,12 +837,42 @@ function extractServiceType(message) {
     if (hasElectricianExplicit && bestMatch.category === 'Electrical' && bestMatch.score > 0) {
         return 'Electrical';
     }
+
+    // If cleaner/maid/housekeeper explicitly mentioned, Cleaning wins
+    if (hasCleaningExplicit && bestMatch.category === 'Cleaning' && bestMatch.score > 0) {
+        return 'Cleaning';
+    }
+
+    // If strong cleaning sentence detected (need to clean my house, deep clean, etc.), Cleaning wins
+    if (hasCleaningStrong && bestMatch.category === 'Cleaning' && bestMatch.score > 0) {
+        return 'Cleaning';
+    }
+
+    // If a clear electrical device term (switchboard, MCB, meter board, etc.) was mentioned, Electrical wins
+    if (hasElectricalDeviceExplicit && bestMatch.category === 'Electrical' && bestMatch.score > 0) {
+        return 'Electrical';
+    }
+
+    // If ceiling fan or ceiling light was mentioned, Electrical always wins
+    if (hasCeilingFanContext && bestMatch.category === 'Electrical' && bestMatch.score > 0) {
+        return 'Electrical';
+    }
     
+    // If a specific named appliance + problem detected, Appliance always wins (before HVAC check)
+    if (hasApplianceExplicit && bestMatch.category === 'Appliance' && bestMatch.score > 0) {
+        return 'Appliance';
+    }
+
     // If "AC is not working" or similar phrases were mentioned and HVAC matched, return it immediately
     if (hasACNotWorking && bestMatch.category === 'HVAC' && bestMatch.score > 0) {
         return 'HVAC';
     }
-    
+
+    // If "hvac", "air conditioner", "aircon" was explicitly mentioned, HVAC wins
+    if ((hasHVACExplicit || hasACNotWorking) && bestMatch.category === 'HVAC') {
+        return 'HVAC';
+    }
+
     // If we have a good match (score > 0), return it; otherwise default to General
     return bestMatch.score > 0 ? bestMatch.category : 'General';
 }
